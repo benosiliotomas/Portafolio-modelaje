@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-white text-neutral-900 antialiased;
+    font-family: 'Lato', sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Bodoni Moda', serif;
+  }
+}
+
+@layer utilities {
+  .clip-peg {
+    clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+  }
+
+  .glass-panel {
+    @apply bg-white/70 backdrop-blur-xl border border-neutral-200/50 shadow-[0_8px_30px_rgb(0, 0, 0, 0.04)];
+  }
+
+  .photo-print {
+    @apply bg-white p-2 sm:p-3 pb-8 sm:pb-12 shadow-[0_10px_30px_-10px_rgba(0, 0, 0, 0.15)] border border-neutral-200 transition-all duration-700;
+  }
+
+  /* The "developing" effect initial state (undeveloped photo) */
+  .undeveloped {
+    filter: sepia(0.0) grayscale(0.1) brightness(0.95) contrast(1.0);
+    /* Subtle fade for the undeveloped state, removes the heavy sepia */
+  }
+
+  /* Full developed state */
+  .developed {
+    filter: sepia(0) grayscale(0) brightness(1) contrast(1);
+  }
+}
