@@ -23,7 +23,7 @@ export const profile = {
   phoneE164: '+5492236352632',
   whatsappMessage: 'Hola Tomás, vi tu portfolio y quería consultarte por un trabajo.',
   // Set the handle (without @) to show the Instagram link in Contacto.
-  instagram: null as string | null,
+  instagram: 'benosiliotomas' as string | null,
 };
 
 export const whatsappUrl = `https://wa.me/${profile.phoneE164.replace('+', '')}?text=${encodeURIComponent(profile.whatsappMessage)}`;
