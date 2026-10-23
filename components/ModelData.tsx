@@ -1,54 +1,34 @@
 import React from 'react';
+import { getMeasurements } from '../data/profile';
+import type { Measurement } from '../data/profile';
 
-const DataItem: React.FC<{ label: string; value: string }> = ({ label, value }) => (
-  <li className="flex justify-between items-center py-4 border-b border-neutral-200 group hover:border-neutral-400 transition-colors">
-    <span className="text-xs uppercase tracking-[0.2em] text-neutral-500 font-semibold group-hover:text-neutral-700 transition-colors">{label}</span>
-    <span className="text-lg text-neutral-900 font-light">{value}</span>
-  </li>
+const DataItem: React.FC<{ item: Measurement }> = ({ item }) => (
+  <div className="flex items-baseline justify-between gap-4 py-4 border-b border-hairline">
+    <dt className="eyebrow text-ash">{item.label}</dt>
+    <dd className="m-0 text-right text-ink text-[15px]">
+      {item.value}
+      {item.imperial && <span className="text-ash"> · {item.imperial}</span>}
+    </dd>
+  </div>
 );
 
 const ModelData: React.FC = () => {
-  const modelData = [
-    { label: 'Altura', value: '1,85 m' },
-    { label: 'Fecha de nac.', value: '06/11/2006' },
-    { label: 'Busto', value: '92 cm' },
-    { label: 'Cintura', value: '75 cm' },
-    { label: 'Cadera', value: '97 cm' },
-    { label: 'Pantalón', value: '30' },
-    { label: 'Remera', value: 'M–L' },
-    { label: 'Calzado', value: '43' },
-    { label: 'Cabello', value: 'Negro' },
-    { label: 'Ojos', value: 'Marrones' },
-  ];
-
-  const midpoint = Math.ceil(modelData.length / 2);
-  const column1Data = modelData.slice(0, midpoint);
-  const column2Data = modelData.slice(midpoint);
+  const measurements = getMeasurements();
+  const midpoint = Math.ceil(measurements.length / 2);
+  const columns = [measurements.slice(0, midpoint), measurements.slice(midpoint)];
 
   return (
-    <div className="max-w-5xl mx-auto py-20 px-4 animate-fade-in relative z-10">
-
-      <h2
-        className="text-4xl md:text-5xl font-bold text-center text-neutral-900 mb-16 tracking-wide font-['Bodoni_Moda']"
-      >
-        Medidas
-      </h2>
-
-      <div className="glass-panel p-8 md:p-16 rounded-2xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-0">
-          <ul className="flex flex-col">
-            {column1Data.map(item => (
-              <DataItem key={item.label} label={item.label} value={item.value} />
-            ))}
-          </ul>
-          <ul className="flex flex-col">
-            {column2Data.map(item => (
-              <DataItem key={item.label} label={item.label} value={item.value} />
-            ))}
-          </ul>
-        </div>
+    <section aria-labelledby="medidas-heading" className="fade-in max-w-4xl mx-auto px-4 sm:px-8 py-[var(--space-section)]">
+      <h2 id="medidas-heading" className="text-4xl sm:text-5xl text-ink mt-0 mb-12">Medidas</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16">
+        {columns.map((column, i) => (
+          // Stacked on phones, the second list continues the first one's hairlines.
+          <dl key={i} className={`m-0 border-hairline ${i === 0 ? 'border-t' : 'md:border-t'}`}>
+            {column.map(item => <DataItem key={item.label} item={item} />)}
+          </dl>
+        ))}
       </div>
-    </div>
+    </section>
   );
 };
 

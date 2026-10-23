@@ -42,17 +42,17 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
         >
           <CloseIcon className="h-6 w-6" />
         </button>
-        <h2 className="text-2xl font-bold text-center text-neutral-900 mb-6 font-['Bodoni_Moda']">Acceso Galería</h2>
+        <h2 className="text-2xl text-center text-ink mb-6 font-display">Acceso Galería</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="password" className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2 font-['Lato']">Contraseña de Administrador</label>
+            <label htmlFor="password" className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2 font-mono">Contraseña de Administrador</label>
             <input
               type="password"
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Ingresa tu contraseña"
-              className="mt-1 block w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-neutral-900 transition-all font-['Lato']"
+              className="mt-1 block w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 text-neutral-900 transition-all font-mono"
               disabled={isLoading}
               autoFocus
             />

@@ -17,18 +17,13 @@ import {
   deleteObject
 } from 'firebase/storage';
 import { db, storage, isConfigured } from './firebaseConfig';
-import type { Photo } from '../types';
+import { createImageVariants } from '../lib/imageVariants';
+import type { Photo, PhotoVariant } from '../types';
 
 const PHOTOS_COLLECTION = 'photos';
 
-const getSamplePhotos = (): Photo[] => {
-  return [
-    { id: 'sample-1', url: 'https://picsum.photos/seed/model1/800/1200', alt: 'Modelo con vestido blanco', concept: 'Serenidad en blanco.', order: 0 },
-    { id: 'sample-2', url: 'https://picsum.photos/seed/model2/800/1200', alt: 'Hombre mirando la ciudad', concept: 'Contemplación urbana.', order: 1 },
-    { id: 'sample-3', url: 'https://picsum.photos/seed/model3/800/1200', alt: 'Retrato en primer plano', concept: 'Un estudio sobre la confianza.', order: 2 },
-    { id: 'sample-4', url: 'https://picsum.photos/seed/model4/800/1200', alt: 'Moda estilo callejero', concept: 'Elegancia casual en movimiento.', order: 3 },
-  ];
-};
+// Variant files never change once uploaded, so browsers may cache them for a year.
+const VARIANT_CACHE_CONTROL = 'public, max-age=31536000, immutable';
 
 // Get photos with real-time updates
 export const subscribeToPhotos = (
@@ -60,57 +55,72 @@ export const subscribeToPhotos = (
   return unsubscribe;
 };
 
-// Add a new photo
+// Add a new photo: resized in the browser, so only optimized files reach Storage.
 export const addPhoto = async (photoData: { alt: string; image: Blob }): Promise<void> => {
   if (!db || !storage) throw new Error("Firebase is not configured.");
+  const firebaseStorage = storage;
+
+  const { width, height, variants } = await createImageVariants(photoData.image);
 
   const photosCollectionRef = collection(db, PHOTOS_COLLECTION);
   const snapshot = await getDocs(photosCollectionRef);
   const newOrder = snapshot.size;
-
   const imageId = doc(photosCollectionRef).id;
-  const storageRef = ref(storage, `${PHOTOS_COLLECTION}/${imageId}`);
 
-  await uploadBytes(storageRef, photoData.image);
-  const url = await getDownloadURL(storageRef);
+  const uploaded: PhotoVariant[] = await Promise.all(
+    variants.map(async ({ width: variantWidth, blob }) => {
+      const extension = blob.type === 'image/webp' ? 'webp' : 'jpg';
+      const storageRef = ref(firebaseStorage, `${PHOTOS_COLLECTION}/${imageId}_${variantWidth}.${extension}`);
+      await uploadBytes(storageRef, blob, { contentType: blob.type, cacheControl: VARIANT_CACHE_CONTROL });
+      return { width: variantWidth, url: await getDownloadURL(storageRef) };
+    })
+  );
 
   await addDoc(photosCollectionRef, {
-    url,
+    url: uploaded[uploaded.length - 1].url,
+    variants: uploaded,
+    width,
+    height,
     alt: photoData.alt,
     order: newOrder,
     concept: '',
+    hidden: false,
   });
 };
 
-// Delete a photo
+// Delete a photo and every stored file that belongs to it
 export const deletePhoto = async (photo: Photo): Promise<void> => {
   if (!db || !storage) throw new Error("Firebase is not configured.");
+  const firebaseStorage = storage;
 
   const photoDocRef = doc(db, PHOTOS_COLLECTION, photo.id);
   await deleteDoc(photoDocRef);
 
-  const storageRef = ref(storage, photo.url);
-  try {
-    await deleteObject(storageRef);
-  } catch (error: any) {
-    if (error.code !== 'storage/object-not-found') {
-      console.error("Error deleting photo from Storage:", error);
+  const fileUrls = new Set([photo.url, ...(photo.variants ?? []).map(v => v.url)]);
+  await Promise.all([...fileUrls].map(async (url) => {
+    try {
+      await deleteObject(ref(firebaseStorage, url));
+    } catch (error: unknown) {
+      const code = (error as { code?: string }).code;
+      if (code !== 'storage/object-not-found') {
+        console.error("Error deleting photo from Storage:", error);
+      }
     }
-  }
+  }));
 };
 
-// Update a photo's concept
-export const updatePhotoConcept = async (photoId: string, concept: string): Promise<void> => {
-  if (!db) throw new Error("Firebase is not configured.");
-  const photoDocRef = doc(db, PHOTOS_COLLECTION, photoId);
-  await updateDoc(photoDocRef, { concept });
-};
-
-// Update photo details (Alt/Title and Concept)
+// Update photo details (alt text and caption)
 export const updatePhotoDetails = async (photoId: string, alt: string, concept: string): Promise<void> => {
   if (!db) throw new Error("Firebase is not configured.");
   const photoDocRef = doc(db, PHOTOS_COLLECTION, photoId);
   await updateDoc(photoDocRef, { alt, concept });
+};
+
+// Hide a photo from visitors without deleting it
+export const setPhotoHidden = async (photoId: string, hidden: boolean): Promise<void> => {
+  if (!db) throw new Error("Firebase is not configured.");
+  const photoDocRef = doc(db, PHOTOS_COLLECTION, photoId);
+  await updateDoc(photoDocRef, { hidden });
 };
 
 // Update the order of all photos

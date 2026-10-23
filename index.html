@@ -1,36 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tomás Benosilio Portfolio</title>
-  <meta name="description" content="Portafolio profesional de Tomás Benosilio, modelo." />
+  <title>Tomás Benosilio — Modelo · Mar del Plata / Buenos Aires</title>
+  <meta name="description" content="Tomás Benosilio, modelo. 1,85 m. Basado en Mar del Plata, disponible en Buenos Aires. Book, digitals, medidas y contacto." />
+  <meta name="theme-color" content="#f4f2ed" />
+  <link rel="canonical" href="https://portafolio-modelaje.vercel.app/" />
+
+  <meta property="og:type" content="profile" />
+  <meta property="og:locale" content="es_AR" />
+  <meta property="og:site_name" content="Tomás Benosilio" />
+  <meta property="og:title" content="Tomás Benosilio — Modelo" />
+  <meta property="og:description" content="1,85 m · Mar del Plata / Buenos Aires. Book, digitals, medidas y contacto." />
+  <meta property="og:url" content="https://portafolio-modelaje.vercel.app/" />
+  <meta property="og:image" content="https://portafolio-modelaje.vercel.app/og.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Retrato de Tomás Benosilio" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Tailwind still comes from the Play CDN; compiling it is Phase 2 of the checklist. -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          keyframes: {
-            fadeIn: {
-              '0%': { opacity: '0', transform: 'translateY(10px)' },
-              '100%': { opacity: '1', transform: 'translateY(0)' },
-            },
-            swingLeft: {
-              '0%, 100%': { transform: 'rotate(-2deg)' },
-              '50%': { transform: 'rotate(2deg)' },
-            },
-            swingRight: {
-              '0%, 100%': { transform: 'rotate(2deg)' },
-              '50%': { transform: 'rotate(-2deg)' },
-            }
+          colors: {
+            paper: 'var(--color-paper)',
+            surface: 'var(--color-surface)',
+            ink: 'var(--color-ink)',
+            stone: 'var(--color-stone)',
+            ash: 'var(--color-ash)',
+            hairline: 'var(--color-hairline)',
+            clay: 'var(--color-clay)',
           },
-          animation: {
-            'fade-in': 'fadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-            'swing-1': 'swingLeft 6s ease-in-out infinite',
-            'swing-2': 'swingRight 7s ease-in-out infinite',
-            'swing-3': 'swingLeft 8s ease-in-out infinite',
-          }
+          fontFamily: {
+            display: ['"Bodoni Moda"', 'Georgia', 'serif'],
+            mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+          },
         }
       }
     }
@@ -38,27 +47,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..900&family=Lato:wght@300;400&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..500&family=IBM+Plex+Mono:wght@400;500&display=swap"
     rel="stylesheet">
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.28.0",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "firebase/app": "https://aistudiocdn.com/firebase@^12.6.0/app",
-    "firebase/firestore": "https://aistudiocdn.com/firebase@^12.6.0/firestore",
-    "firebase/storage": "https://aistudiocdn.com/firebase@^12.6.0/storage",
-    "firebase/": "https://aistudiocdn.com/firebase@^12.6.0/"
-  }
-}
-</script>
+  <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossorigin>
   <link rel="stylesheet" href="/index.css">
 </head>
 
-<body
-  class="bg-white text-neutral-900 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.1),rgba(255,255,255,0))]">
+<body>
   <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>

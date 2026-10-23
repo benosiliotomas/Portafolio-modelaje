@@ -1,21 +1,30 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Header, { Page } from './components/Header';
-import Clothesline from './components/Clothesline';
+import Intro from './components/Intro';
+import Gallery from './components/Gallery';
 import PhotoModal from './components/PhotoModal';
 import ModelData from './components/ModelData';
 import Contact from './components/Contact';
 import AdminPanel from './components/AdminPanel';
 import LoginModal from './components/LoginModal';
 import { useAuth } from './contexts/AuthContext';
+import { getVisiblePhotos } from './lib/photoUtils';
+import { profile } from './data/profile';
 import type { Photo } from './types';
-import { 
+import {
   subscribeToPhotos,
   addPhoto,
   deletePhoto,
-  updatePhotoConcept,
   updatePhotoDetails,
   updatePhotosOrder,
+  setPhotoHidden,
 } from './services/photoService';
+
+// The admin entry point is not linked anywhere: open /admin directly.
+const isAdminRoute = window.location.pathname.replace(/\/+$/, '') === '/admin';
+
+const errorMessage = (err: unknown, fallback: string): string =>
+  err instanceof Error && err.message ? err.message : fallback;
 
 const App: React.FC = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -23,12 +32,12 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
-  const [isEditingPhoto, setIsEditingPhoto] = useState(false); // New state to trigger edit mode in modal
+  const [isEditingPhoto, setIsEditingPhoto] = useState(false);
   const [activePage, setActivePage] = useState<Page>('gallery');
-  
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
   const { isAdmin, logout } = useAuth();
-  
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(isAdminRoute);
+
   useEffect(() => {
     setIsLoading(true);
     const unsubscribe = subscribeToPhotos((newPhotos) => {
@@ -43,27 +52,34 @@ const App: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
+  const visiblePhotos = getVisiblePhotos(photos, isAdmin);
+
+  const handleNavigate = (page: Page) => {
+    setActivePage(page);
+    window.scrollTo({ top: 0 });
+  };
+
   const handleSelectPhoto = (photo: Photo) => {
     setSelectedPhoto(photo);
-    setIsEditingPhoto(false); // Default to view mode
+    setIsEditingPhoto(false);
   };
 
   const handleEditPhotoTrigger = (photo: Photo) => {
     setSelectedPhoto(photo);
-    setIsEditingPhoto(true); // Open directly in edit mode
+    setIsEditingPhoto(true);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setSelectedPhoto(null);
     setIsEditingPhoto(false);
-  };
+  }, []);
 
   const handleAddPhoto = async (photoData: { alt: string; image: Blob }) => {
     try {
       await addPhoto(photoData);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to add photo:", err);
-      setError(err.message || "Failed to add photo.");
+      setError(errorMessage(err, "No se pudo subir la foto."));
       throw err;
     }
   };
@@ -74,76 +90,77 @@ const App: React.FC = () => {
 
     try {
       await deletePhoto(photoToDelete);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to delete photo:", err);
-      setError(err.message || "Failed to delete photo.");
-    }
-  };
-
-  const handleUpdateConcept = async (photoId: string, concept: string) => {
-    try {
-      await updatePhotoConcept(photoId, concept);
-      setPhotos(prevPhotos => 
-        prevPhotos.map(p => p.id === photoId ? { ...p, concept } : p)
-      );
-    } catch (err: any)      {
-      console.error("Failed to update concept:", err);
-      setError(err.message || "Failed to update concept.");
+      setError(errorMessage(err, "No se pudo eliminar la foto."));
     }
   };
 
   const handleUpdatePhotoDetails = async (photoId: string, alt: string, concept: string) => {
     try {
       await updatePhotoDetails(photoId, alt, concept);
-      setPhotos(prevPhotos => 
+      setPhotos(prevPhotos =>
         prevPhotos.map(p => p.id === photoId ? { ...p, alt, concept } : p)
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to update photo details:", err);
-      setError(err.message || "Failed to update photo details.");
+      setError(errorMessage(err, "No se pudieron guardar los detalles."));
     }
   };
-  
+
+  const handleToggleHidden = async (photo: Photo) => {
+    try {
+      await setPhotoHidden(photo.id, !photo.hidden);
+    } catch (err: unknown) {
+      console.error("Failed to toggle photo visibility:", err);
+      setError(errorMessage(err, "No se pudo cambiar la visibilidad de la foto."));
+    }
+  };
+
   const handleReorderPhotos = async (reorderedPhotos: Photo[]) => {
     setPhotos(reorderedPhotos);
     try {
       await updatePhotosOrder(reorderedPhotos);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to reorder photos:", err);
-      setError(err.message || "Failed to save new order.");
+      setError(errorMessage(err, "No se pudo guardar el nuevo orden."));
     }
   };
 
-  const currentIndex = selectedPhoto ? photos.findIndex(p => p.id === selectedPhoto.id) : -1;
-  const hasNext = currentIndex !== -1 && currentIndex < photos.length - 1;
+  const currentIndex = selectedPhoto ? visiblePhotos.findIndex(p => p.id === selectedPhoto.id) : -1;
+  const hasNext = currentIndex !== -1 && currentIndex < visiblePhotos.length - 1;
   const hasPrevious = currentIndex > 0;
 
   const handleNextPhoto = useCallback(() => {
     if (hasNext) {
-       setSelectedPhoto(photos[currentIndex + 1]);
-       setIsEditingPhoto(false); // Reset edit mode on nav
+      setSelectedPhoto(visiblePhotos[currentIndex + 1]);
+      setIsEditingPhoto(false);
     }
-  }, [currentIndex, photos, hasNext]);
+  }, [currentIndex, visiblePhotos, hasNext]);
 
   const handlePreviousPhoto = useCallback(() => {
     if (hasPrevious) {
-      setSelectedPhoto(photos[currentIndex - 1]);
-      setIsEditingPhoto(false); // Reset edit mode on nav
+      setSelectedPhoto(visiblePhotos[currentIndex - 1]);
+      setIsEditingPhoto(false);
     }
-  }, [currentIndex, photos, hasPrevious]);
+  }, [currentIndex, visiblePhotos, hasPrevious]);
 
   const renderContent = () => {
     switch (activePage) {
       case 'gallery':
         return (
-          <Clothesline 
-            photos={photos} 
-            onSelectPhoto={handleSelectPhoto}
-            onEditPhoto={handleEditPhotoTrigger}
-            isAdmin={isAdmin}
-            onDeletePhoto={handleDeletePhoto}
-            onReorderPhotos={handleReorderPhotos}
-          />
+          <>
+            <Intro onContact={() => handleNavigate('contact')} />
+            <Gallery
+              photos={visiblePhotos}
+              onSelectPhoto={handleSelectPhoto}
+              onEditPhoto={handleEditPhotoTrigger}
+              isAdmin={isAdmin}
+              onDeletePhoto={handleDeletePhoto}
+              onReorderPhotos={handleReorderPhotos}
+              onToggleHidden={handleToggleHidden}
+            />
+          </>
         );
       case 'model-data':
         return <ModelData />;
@@ -155,35 +172,36 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen">
-      <Header activePage={activePage} onNavigate={setActivePage} />
+    <div className="min-h-screen flex flex-col">
+      <Header activePage={activePage} onNavigate={handleNavigate} />
 
-      <main>
+      <main className="flex-1">
         {isAdmin && activePage === 'gallery' && (
           <AdminPanel onPhotoAdded={handleAddPhoto} />
         )}
-        
+
         {error && (
-            <div className="max-w-4xl mx-auto my-6 px-4">
-              <div className="bg-amber-100 border-l-4 border-amber-500 text-amber-800 p-4 rounded-md" role="alert">
-                <p className="font-bold">Aviso para el administrador</p>
-                <p>{error}</p>
-              </div>
+          <div className="max-w-4xl mx-auto my-6 px-4">
+            <div className="border-l-2 border-clay bg-surface text-stone p-4" role="alert">
+              <p className="eyebrow text-clay m-0 mb-1">Aviso para el administrador</p>
+              <p className="m-0 text-sm">{error}</p>
             </div>
+          </div>
         )}
 
         {isLoading ? (
-          <p className="text-center py-20 text-stone-500 animate-pulse">Cargando portafolio...</p>
+          <p className="eyebrow text-center py-20 text-ash">Cargando…</p>
         ) : (
           renderContent()
         )}
       </main>
-      
+
       {activePage === 'gallery' && (
-        <PhotoModal 
-          photo={selectedPhoto} 
+        <PhotoModal
+          photo={selectedPhoto}
+          index={currentIndex}
+          total={visiblePhotos.length}
           onClose={handleCloseModal}
-          onUpdateConcept={handleUpdateConcept}
           onUpdateDetails={handleUpdatePhotoDetails}
           onNext={handleNextPhoto}
           onPrevious={handlePreviousPhoto}
@@ -194,18 +212,14 @@ const App: React.FC = () => {
         />
       )}
 
-      {isLoginModalOpen && <LoginModal onClose={() => setIsLoginModalOpen(false)} />}
-      
-      <footer className="text-center p-6 text-stone-500 font-light text-sm">
-        <p>Portfolio Concept &copy; {new Date().getFullYear()}. All rights reserved.</p>
-        <div className="mt-2">
-          {isAdmin ? (
-            <button onClick={logout} className="text-stone-500 hover:text-stone-800 hover:underline">
+      {isLoginModalOpen && !isAdmin && <LoginModal onClose={() => setIsLoginModalOpen(false)} />}
+
+      <footer className="border-t border-hairline">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 flex items-center justify-between gap-4">
+          <p className="eyebrow text-ash m-0">&copy; {new Date().getFullYear()} {profile.name}</p>
+          {isAdmin && (
+            <button onClick={logout} className="eyebrow text-ash hover:text-ink">
               Cerrar sesión
-            </button>
-          ) : (
-            <button onClick={() => setIsLoginModalOpen(true)} className="text-stone-500 hover:text-stone-800 hover:underline">
-              Admin Login
             </button>
           )}
         </div>

@@ -1,20 +1,34 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Portfolio — Tomás Benosilio
 
-# Run and deploy your AI Studio app
+React + Vite + Firebase (Firestore, Storage, Auth), deployed on Vercel.
+Visual system: see [DESIGN.md](DESIGN.md).
 
-This contains everything you need to run your app locally.
+## Local
 
-View your app in AI Studio: https://ai.studio/apps/5b7079c3-08b2-4058-a294-e1f9335ff973
+```bash
+npm install
+npm run dev        # http://localhost:3000
+npm test           # unit tests
+npm run typecheck
+npm run build
+```
 
-## Run Locally
+## Admin
 
-**Prerequisites:**  Node.js
+Open `/admin` and sign in. From there you can upload, reorder, edit captions, hide and
+delete photos. Uploads are resized in the browser to 480/1080/2000 px WebP before they
+reach Storage.
 
+Photos uploaded before that existed can be optimized with:
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+npm run optimize-photos -- --dry-run   # read-only, shows the savings
+npm run optimize-photos                # asks for the admin password
+```
+
+Original files stay in Storage; only the Firestore documents change (the old URL is kept
+in `originalUrl`).
+
+## Profile data
+
+Measurements, contact details and the Instagram handle live in `data/profile.ts`.
