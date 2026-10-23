@@ -24,14 +24,14 @@ const Header: React.FC<HeaderProps> = ({ items, activeId, homeHref = '#top' }) =
     <div className="h-full max-w-7xl mx-auto px-4 sm:px-8 flex items-center justify-between gap-3">
       <a
         href={homeHref}
-        className="font-display text-[15px] min-[400px]:text-[17px] sm:text-xl leading-none tracking-[0.01em] whitespace-nowrap text-ink hover:text-stone transition-colors duration-150"
+        className="shrink-0 font-display text-xl leading-none tracking-[0.01em] whitespace-nowrap text-ink hover:text-stone transition-colors duration-150"
       >
-        {/* Phones under 400px get the short form so the menu fits on one line. */}
-        <span className="min-[400px]:hidden" aria-hidden="true">T. Benosilio</span>
-        <span className="sr-only min-[400px]:not-sr-only">{profile.name}</span>
+        {/* Below 768px a monogram keeps the whole menu on one line; the cover shows the full name. */}
+        <span className="md:hidden tracking-[0.06em]" aria-hidden="true">TB</span>
+        <span className="sr-only md:not-sr-only">{profile.name}</span>
       </a>
 
-      <nav aria-label="Navegación principal" className="flex items-center gap-2 min-[360px]:gap-3 min-[400px]:gap-4 sm:gap-8">
+      <nav aria-label="Navegación principal" className="flex items-center gap-2 min-[360px]:gap-3 min-[400px]:gap-4 sm:gap-6 lg:gap-8">
         {items.map(({ id, label, href, desktopOnly, isPage }) => {
           const isActive = activeId === id;
           return (
