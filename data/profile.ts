@@ -8,10 +8,10 @@ export interface Measurement {
 }
 
 const BIRTH_DATE = new Date(2006, 10, 6);
-const HEIGHT_M = 1.85;
-const CHEST_CM = 92;
-const WAIST_CM = 75;
-const HIPS_CM = 97;
+const HEIGHT_M = 1.83;
+const CHEST_CM = 95;
+const WAIST_CM = 73;
+const HIPS_CM = 95;
 
 export const profile = {
   name: 'Tomás Benosilio',
