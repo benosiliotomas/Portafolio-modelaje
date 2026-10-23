@@ -1,0 +1,45 @@
+import type { Photo } from '../types';
+
+export interface UgcSample {
+  title: string;
+  /** Public link to the post: Instagram, TikTok, Drive, etc. */
+  url: string;
+  brand?: string;
+}
+
+export interface UgcStep {
+  title: string;
+  text: string;
+}
+
+// Draft copy for /ugc. Formats and process are commitments to brands — adjust them to what
+// you actually deliver before sharing the page.
+export const ugc = {
+  headline: 'UGC para marcas',
+  intro: 'Videos y fotos verticales para redes y anuncios, hechos por un modelo: pose, encuadre y el producto en primer plano.',
+  formats: [
+    'Video vertical 9:16 para Reels, TikTok y anuncios',
+    'Fotos del producto en uso',
+    'Unboxing y primeras impresiones',
+    'Reseña o testimonio a cámara',
+  ],
+  steps: [
+    { title: 'Brief', text: 'Me contás el producto, el objetivo y dónde se va a publicar.' },
+    { title: 'Propuesta', text: 'Te paso la idea y un guion corto para aprobar antes de grabar.' },
+    { title: 'Entrega', text: 'Recibís los archivos editados, listos para publicar.' },
+  ] as UgcStep[],
+  // Add links to finished pieces here; the section stays hidden while the list is empty.
+  samples: [] as UgcSample[],
+  whatsappMessage: 'Hola Tomás, vi tu página de UGC y quería consultarte por contenido para una marca.',
+};
+
+const UGC_LABEL = /comercial|commercial|lifestyle/i;
+const STRIP_SIZE = 3;
+
+export function pickUgcPhotos(photos: Photo[]): Photo[] {
+  return photos.filter(p => !p.hidden && UGC_LABEL.test(p.alt)).slice(0, STRIP_SIZE);
+}
+
+export function ugcMailto(email: string): string {
+  return `mailto:${email}?subject=${encodeURIComponent('Consulta UGC')}`;
+}

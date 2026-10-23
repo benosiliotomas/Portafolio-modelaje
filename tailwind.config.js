@@ -2,6 +2,8 @@
 export default {
   content: [
     './index.html',
+    './ugc.html',
+    './ugc/**/*.tsx',
     './*.tsx',
     './components/**/*.tsx',
     './admin/**/*.tsx',

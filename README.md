@@ -45,6 +45,28 @@ npm run compcard   # writes public/comp-card.pdf from the published photos
 Read-only. Re-run it after changing the cover, the photos or the measurements, then commit
 the PDF.
 
+## Pages
+
+- `/` — portfolio (`index.html` → `index.tsx`)
+- `/ugc` — page for brands (`ugc.html` → `ugc.tsx`, copy in `data/ugc.ts`). Not linked from
+  the portfolio menu; send it directly to brands.
+- `/admin` — admin (loaded on demand from `index.tsx`)
+
+`robots.txt` and `sitemap.xml` are generated at build time from `site.config.ts`.
+
+## Custom domain
+
+1. Buy the domain (e.g. `tomasbenosilio.com`; for `.com.ar`, nic.ar).
+2. Vercel → project → Settings → Domains → add `tomasbenosilio.com` and
+   `www.tomasbenosilio.com`, with `www` redirecting to the bare domain.
+3. At the registrar, create the DNS records Vercel shows on that screen (typically an `A`
+   record for `@` and a `CNAME` for `www`). Wait until Vercel marks the domain as valid.
+4. Set `SITE_URL` in `site.config.ts` to the new address, run `npm run compcard`, commit and
+   push. Canonical links, Open Graph, sitemap, robots.txt and the comp card follow.
+5. Update the link in your Instagram bio, and submit `/sitemap.xml` in Google Search Console.
+
+The `vercel.app` address keeps working after the switch.
+
 ## Profile data
 
 Measurements, bio, contact details and the Instagram handle live in `data/profile.ts`.

@@ -13,10 +13,11 @@ import { fetchPublicPhotos } from '../services/firestoreRest';
 import { splitPortfolio } from '../lib/portfolio';
 import { getVisiblePhotos } from '../lib/photoUtils';
 import { profile, getMeasurements } from '../data/profile';
+import { SITE_URL } from '../site.config';
 import type { Photo } from '../types';
 
 const OUTPUT = fileURLToPath(new URL('../public/comp-card.pdf', import.meta.url));
-const SITE = 'portafolio-modelaje.vercel.app';
+const SITE = new URL(SITE_URL).host;
 
 // A5 in points, with the design tokens from DESIGN.md.
 const PAGE = { width: 419.53, height: 595.28 };
