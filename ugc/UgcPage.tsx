@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import Header from '../components/Header';
 import PhotoImage from '../components/PhotoImage';
+import { siteNav } from '../components/navigation';
 import { SectionHeading } from '../components/BookSection';
 import { fetchPublicPhotos } from '../services/firestoreRest';
 import { profile } from '../data/profile';
@@ -31,14 +33,7 @@ const UgcPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="sticky top-0 z-40 h-14 bg-paper border-b border-hairline">
-        <div className="h-full max-w-7xl mx-auto px-4 sm:px-8 flex items-center justify-between gap-4">
-          <a href="/" className="font-display text-[15px] min-[400px]:text-[17px] sm:text-xl leading-none whitespace-nowrap text-ink hover:text-stone">
-            {profile.name}
-          </a>
-          <a href="/" className="eyebrow nav-link text-ash hover:text-ink py-2">Portfolio de modelo →</a>
-        </div>
-      </header>
+      <Header items={siteNav(false)} activeId="ugc" homeHref="/" />
 
       <main className="flex-1">
         <section aria-labelledby="ugc-heading" className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-20 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 lg:items-end">

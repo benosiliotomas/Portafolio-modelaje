@@ -1,5 +1,6 @@
-import React, { useCallback, useState } from 'react';
-import Header, { NavItem } from './Header';
+import React, { useCallback, useEffect, useState } from 'react';
+import Header from './Header';
+import { siteNav } from './navigation';
 import Hero from './Hero';
 import BookSection from './BookSection';
 import DigitalsSection from './DigitalsSection';
@@ -13,12 +14,8 @@ import { getVisiblePhotos } from '../lib/photoUtils';
 import { profile } from '../data/profile';
 import type { Photo } from '../types';
 
-const NAV_ITEMS: NavItem[] = [
-  { id: 'book', label: 'Book', desktopOnly: true },
-  { id: 'digitals', label: 'Digitals' },
-  { id: 'medidas', label: 'Medidas' },
-  { id: 'contacto', label: 'Contacto' },
-];
+const NAV_ITEMS = siteNav(true);
+const OBSERVED_SECTIONS = ['top', ...NAV_ITEMS.filter(item => !item.isPage).map(item => item.id)];
 
 interface PortfolioProps {
   photos: Photo[];
@@ -39,8 +36,16 @@ interface ViewerState {
 const Portfolio: React.FC<PortfolioProps> = ({ photos, isLoading, error, admin, adminPanel, footerAction }) => {
   const { cover, book, digitals } = splitPortfolio(getVisiblePhotos(photos, Boolean(admin)));
   // "top" (the cover) is observed too, so scrolling back up clears the highlight.
-  const activeId = useActiveSection(['top', ...NAV_ITEMS.map(item => item.id)]);
+  const activeId = useActiveSection(OBSERVED_SECTIONS);
   const [viewer, setViewer] = useState<ViewerState | null>(null);
+
+  // Arriving from another page at /#medidas: the browser jumps before the photos exist and
+  // they push the section down, so jump again once they are on the page.
+  useEffect(() => {
+    if (isLoading || !window.location.hash) return;
+    const target = document.getElementById(window.location.hash.slice(1));
+    if (target) requestAnimationFrame(() => target.scrollIntoView());
+  }, [isLoading]);
 
   const open = (list: Photo[], editing = false) => (photo: Photo) =>
     setViewer({ list, index: Math.max(0, list.findIndex(p => p.id === photo.id)), editing });
