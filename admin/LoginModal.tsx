@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { CloseIcon } from './icons';
+import { useAuth } from './AuthContext';
+import { CloseIcon } from '../components/icons';
 
 interface LoginModalProps {
   onClose: () => void;

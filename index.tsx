@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
-import { AuthProvider } from './contexts/AuthContext';
+import PublicApp from './PublicApp';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -9,10 +8,22 @@ if (!rootElement) {
 }
 
 const root = ReactDOM.createRoot(rootElement);
-root.render(
-  <React.StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
-  </React.StrictMode>
-);
+
+// The admin bundle (Firebase SDK, auth, uploads) is only downloaded on /admin.
+const isAdminRoute = window.location.pathname.replace(/\/+$/, '') === '/admin';
+
+if (isAdminRoute) {
+  import('./admin/AdminApp').then(({ default: AdminApp }) => {
+    root.render(
+      <React.StrictMode>
+        <AdminApp />
+      </React.StrictMode>
+    );
+  });
+} else {
+  root.render(
+    <React.StrictMode>
+      <PublicApp />
+    </React.StrictMode>
+  );
+}

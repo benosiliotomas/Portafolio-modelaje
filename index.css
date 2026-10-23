@@ -1,5 +1,8 @@
-/* Design tokens — see DESIGN.md. Plain CSS on purpose: without a Tailwind build
-   step, @apply in this file was shipped to production unprocessed. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design tokens — see DESIGN.md. */
 :root {
   --color-paper: #f4f2ed;
   --color-surface: #ffffff;
@@ -51,6 +54,13 @@ h3 {
 @media (max-width: 399px) {
   .nav-link {
     letter-spacing: 0.06em;
+  }
+}
+
+@media (max-width: 359px) {
+  .nav-link {
+    font-size: 10px;
+    letter-spacing: 0.03em;
   }
 }
 

@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { UploadIcon } from './icons';
+import { UploadIcon } from '../components/icons';
+import type { PhotoSection } from '../types';
 
 const MAX_FILE_BYTES = 25 * 1024 * 1024;
 
 interface ImageUploaderProps {
-  onPhotoAdded: (photoData: { alt: string; image: Blob }) => Promise<void>;
+  onPhotoAdded: (photoData: { alt: string; image: Blob; section: PhotoSection }) => Promise<void>;
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({ onPhotoAdded }) => {
   const [alt, setAlt] = useState('');
+  const [section, setSection] = useState<PhotoSection>('book');
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -43,7 +45,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onPhotoAdded }) => {
     setError(null);
 
     try {
-      await onPhotoAdded({ alt, image: file });
+      await onPhotoAdded({ alt, image: file, section });
 
       // Reset form on success
       setAlt('');
@@ -81,6 +83,26 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onPhotoAdded }) => {
           </div>
         </div>
       </div>
+
+      <fieldset className="border-0 p-0 m-0">
+        <legend className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3 font-mono">Sección</legend>
+        <div className="flex gap-6">
+          {(['book', 'digitals'] as const).map(option => (
+            <label key={option} className="eyebrow text-ink flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="section"
+                value={option}
+                checked={section === option}
+                onChange={() => setSection(option)}
+                disabled={isLoading}
+                className="accent-[var(--color-ink)]"
+              />
+              {option === 'book' ? 'Book' : 'Digitals'}
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       <div>
         <label htmlFor="alt" className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3 font-mono">Descripción (texto alternativo)</label>

@@ -2,6 +2,7 @@ import { initializeApp, getApp, getApps, FirebaseApp } from 'firebase/app';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { getAuth, Auth } from 'firebase/auth';
+import { FIREBASE_PROJECT_ID } from './firebaseProject';
 
 // --- PEGA TU OBJETO DE CONFIGURACIÓN DE FIREBASE AQUÍ ---
 // Reemplaza estos valores de marcador de posición con las credenciales reales de tu proyecto de Firebase.
@@ -9,7 +10,7 @@ import { getAuth, Auth } from 'firebase/auth';
 const firebaseConfig = {
   apiKey: "AIzaSyAF0670ZL8fJHGQufNbdn9WaYTko0r0Su4",
   authDomain: "modelo-portafolio.firebaseapp.com",
-  projectId: "modelo-portafolio",
+  projectId: FIREBASE_PROJECT_ID,
   storageBucket: "modelo-portafolio.firebasestorage.app",
   messagingSenderId: "945440806728",
   appId: "1:945440806728:web:2f7a5ab78d0b13865d057d"

@@ -13,7 +13,7 @@ typography:
   display:
     fontFamily: Bodoni Moda
     fontWeight: 400
-    note: Name and section titles only. Never bold, never body copy.
+    note: Name, section titles and the short bio (20px, optical sizing keeps it legible). Never bold, never UI text.
   eyebrow:
     fontFamily: IBM Plex Mono
     fontSize: 11px
@@ -61,8 +61,23 @@ the white-backdrop digitals), Nike's campaign loudness, and every SaaS gradient 
 - Motion is limited to a 300ms fade and a 1.5% hover zoom; `prefers-reduced-motion` disables both.
 - `ash` is the lightest colour allowed for text.
 
-## Phase 2 additions
+## Page structure
 
-- Digitals section with real polaroid frames: `surface` border, 4% sides, 18% bottom,
-  eyebrow caption in the bottom margin ("FRONT · 10.2026").
-- Hero image on the home page, book and digitals split, shareable anchors.
+One page, shareable anchors: `#top` (cover) · `#book` · `#digitals` · `#medidas` · `#contacto`.
+
+- **Cover** — the featured photo (falls back to the first book photo). Phones: full-width 4:5
+  with the name below. Desktop: photo on 7 of 12 columns, capped to the screen height so the
+  name and "Contactar" stay above the fold.
+- **Book** — groups of three on a 12-column grid: one photo across 8 columns and two rows,
+  two on 4 columns, sides alternating per group. Phones: one column. 12px gaps.
+- **Digitals** — the polaroid frame lives only here, because digitals are what the industry
+  calls polaroids: `surface` border, 4% sides, caption in the bottom margin. 2 columns on
+  phones, 4 on desktop.
+- **Medidas** — measurements (metric · imperial) beside the bio in Spanish and English.
+- **Contacto** — email, WhatsApp, Instagram, comp card PDF.
+
+## Comp card
+
+A5, two pages, white. Front: cover photo, name in Bodoni 30pt, role line in tracked mono.
+Back: 2×2 photos (two digitals, two book), eight measurements in two rows, name and contact
+over a hairline. Generated from live data by `npm run compcard`.

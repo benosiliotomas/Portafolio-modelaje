@@ -1,8 +1,9 @@
 import React from 'react';
 import ImageUploader from './ImageUploader';
+import type { PhotoSection } from '../types';
 
 interface AdminPanelProps {
-  onPhotoAdded: (photoData: { alt: string; image: Blob }) => Promise<void>;
+  onPhotoAdded: (photoData: { alt: string; image: Blob; section: PhotoSection }) => Promise<void>;
 }
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ onPhotoAdded }) => (

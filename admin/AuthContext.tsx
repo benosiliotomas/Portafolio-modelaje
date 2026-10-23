@@ -4,6 +4,8 @@ import { auth } from '../services/firebaseConfig';
 
 interface AuthContextType {
   isAdmin: boolean;
+  /** False until Firebase has restored (or ruled out) a saved session. */
+  isReady: boolean;
   login: (password: string) => Promise<boolean>;
   logout: () => Promise<void>;
 }
@@ -12,12 +14,17 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    if (!auth) return;
+    if (!auth) {
+      setIsReady(true);
+      return;
+    }
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setIsAdmin(!!user);
+      setIsReady(true);
     });
 
     return () => unsubscribe();
@@ -50,7 +57,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <AuthContext.Provider value={{ isAdmin, login, logout }}>
+    <AuthContext.Provider value={{ isAdmin, isReady, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

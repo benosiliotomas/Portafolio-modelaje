@@ -18,7 +18,7 @@ import {
 } from 'firebase/storage';
 import { db, storage, isConfigured } from './firebaseConfig';
 import { createImageVariants } from '../lib/imageVariants';
-import type { Photo, PhotoVariant } from '../types';
+import type { Photo, PhotoSection, PhotoVariant } from '../types';
 
 const PHOTOS_COLLECTION = 'photos';
 
@@ -56,7 +56,7 @@ export const subscribeToPhotos = (
 };
 
 // Add a new photo: resized in the browser, so only optimized files reach Storage.
-export const addPhoto = async (photoData: { alt: string; image: Blob }): Promise<void> => {
+export const addPhoto = async (photoData: { alt: string; image: Blob; section: PhotoSection }): Promise<void> => {
   if (!db || !storage) throw new Error("Firebase is not configured.");
   const firebaseStorage = storage;
 
@@ -85,6 +85,7 @@ export const addPhoto = async (photoData: { alt: string; image: Blob }): Promise
     order: newOrder,
     concept: '',
     hidden: false,
+    section: photoData.section,
   });
 };
 
@@ -121,6 +122,25 @@ export const setPhotoHidden = async (photoId: string, hidden: boolean): Promise<
   if (!db) throw new Error("Firebase is not configured.");
   const photoDocRef = doc(db, PHOTOS_COLLECTION, photoId);
   await updateDoc(photoDocRef, { hidden });
+};
+
+// Move a photo between the book and the digitals
+export const setPhotoSection = async (photoId: string, section: PhotoSection): Promise<void> => {
+  if (!db) throw new Error("Firebase is not configured.");
+  await updateDoc(doc(db, PHOTOS_COLLECTION, photoId), { section });
+};
+
+// Make one photo the cover; only one photo can be featured at a time
+export const setFeaturedPhoto = async (photos: Photo[], photoId: string): Promise<void> => {
+  if (!db) throw new Error("Firebase is not configured.");
+  const firestore = db;
+
+  const batch = writeBatch(firestore);
+  photos
+    .filter(photo => photo.featured && photo.id !== photoId)
+    .forEach(photo => batch.update(doc(firestore, PHOTOS_COLLECTION, photo.id), { featured: false }));
+  batch.update(doc(firestore, PHOTOS_COLLECTION, photoId), { featured: true });
+  await batch.commit();
 };
 
 // Update the order of all photos

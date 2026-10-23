@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getMeasurements, headlineStats } from './profile';
+import { getBio, getMeasurements, headlineStats } from './profile';
 
 const valueOf = (label: string): string => {
   const item = getMeasurements(new Date(2026, 9, 23)).find(m => m.label === label);
@@ -17,5 +17,13 @@ describe('measurements', () => {
 
   it('keeps the intro line in sync with the measurements page', () => {
     expect(headlineStats).toEqual(['1,83 m', 'Pecho 95', 'Cintura 73', 'Calzado 43']);
+  });
+});
+
+describe('bio', () => {
+  it('uses the computed age and current height in both languages', () => {
+    const [es, en] = getBio(new Date(2026, 10, 6));
+    expect(es.text).toContain('20 años, 1,83 m');
+    expect(en.text).toContain(`20, 6'0"`);
   });
 });
