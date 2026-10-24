@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { decodeValue, documentToPhoto } from './firestoreRest';
+import { decodeValue, documentToPhoto, documentToSavedPosts } from './firestoreRest';
 
 describe('decodeValue', () => {
   it('decodes scalar values', () => {
@@ -45,5 +45,25 @@ describe('documentToPhoto', () => {
   it('fills safe defaults for missing alt and order', () => {
     const photo = documentToPhoto({ name: 'x/photos/a', fields: { url: { stringValue: 'u' } } });
     expect(photo).toMatchObject({ alt: '', order: 0 });
+  });
+});
+
+describe('documentToSavedPosts', () => {
+  it('reads the ordered list of links', () => {
+    expect(documentToSavedPosts({
+      name: 'x/content/instagram',
+      fields: { posts: { arrayValue: { values: [{ stringValue: 'a' }, { stringValue: 'b' }] } } },
+    })).toEqual({ status: 'saved', posts: ['a', 'b'] });
+  });
+
+  it('treats a saved empty list as saved', () => {
+    expect(documentToSavedPosts({ name: 'x', fields: { posts: { arrayValue: {} } } })).toEqual({ status: 'saved', posts: [] });
+  });
+
+  it('ignores anything in the list that is not a string', () => {
+    expect(documentToSavedPosts({
+      name: 'x',
+      fields: { posts: { arrayValue: { values: [{ stringValue: 'a' }, { integerValue: '3' }] } } },
+    })).toEqual({ status: 'saved', posts: ['a'] });
   });
 });

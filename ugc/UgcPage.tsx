@@ -3,22 +3,24 @@ import Header from '../components/Header';
 import PhotoImage from '../components/PhotoImage';
 import { siteNav } from '../components/navigation';
 import { SectionHeading } from '../components/BookSection';
-import { fetchPublicPhotos } from '../services/firestoreRest';
+import { fetchPublicPhotos, fetchSavedInstagramPosts } from '../services/firestoreRest';
 import { profile } from '../data/profile';
 import { ugc, pickUgcPhotos, ugcMailto } from '../data/ugc';
 import { parseInstagramUrls } from '../lib/instagram';
+import type { InstagramPost } from '../lib/instagram';
+import { resolvePostLinks } from '../lib/instagramList';
 import InstagramEmbeds from './InstagramEmbeds';
 import type { Photo } from '../types';
 
 const instagramUrl = profile.instagram ? `https://instagram.com/${profile.instagram}` : null;
 const whatsappUrl = `https://wa.me/${profile.phoneE164.replace('+', '')}?text=${encodeURIComponent(ugc.whatsappMessage)}`;
 
-const instagramPosts = parseInstagramUrls(ugc.instagramPosts);
-
 const linkClass = 'eyebrow text-ink border-b border-ink pb-1 hover:text-clay hover:border-clay transition-colors duration-150';
 
 const UgcPage: React.FC = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
+  // null while loading, so the defaults never flash before the saved list.
+  const [instagramPosts, setInstagramPosts] = useState<InstagramPost[] | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -26,6 +28,9 @@ const UgcPage: React.FC = () => {
       .then(all => { if (!cancelled) setPhotos(pickUgcPhotos(all)); })
       // The page reads fine without the photo strip, so a failed fetch only hides it.
       .catch((err: unknown) => console.error('Failed to load photos:', err));
+    fetchSavedInstagramPosts().then(saved => {
+      if (!cancelled) setInstagramPosts(parseInstagramUrls(resolvePostLinks(saved, ugc.defaultInstagramPosts)));
+    });
     return () => { cancelled = true; };
   }, []);
 
@@ -93,7 +98,9 @@ const UgcPage: React.FC = () => {
 
         <section aria-labelledby="muestras-heading" className="max-w-7xl mx-auto px-4 sm:px-8 pt-[var(--space-section)]">
           <div className="-mx-4 sm:mx-0"><SectionHeading id="muestras-heading" number="03" title="Muestras" /></div>
-          {instagramPosts.length > 0 ? (
+          {instagramPosts === null ? (
+            <p className="eyebrow text-ash m-0">Cargando…</p>
+          ) : instagramPosts.length > 0 ? (
             <InstagramEmbeds posts={instagramPosts} />
           ) : (
             <p className="text-stone text-[15px] m-0">

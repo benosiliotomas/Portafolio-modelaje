@@ -23,7 +23,8 @@ npm run build
 ## Admin
 
 Open `/admin` and sign in. From there you can upload (choosing Book or Digitals), pick the
-cover (star), move photos between sections, reorder, edit captions, hide and delete. Uploads are resized in the browser to 480/1080/2000 px WebP before they
+cover (star), move photos between sections, reorder, edit captions, hide and delete, and
+manage the Instagram posts on `/contenido`. Uploads are resized in the browser to 480/1080/2000 px WebP before they
 reach Storage.
 
 Photos uploaded before that existed can be optimized with:
@@ -50,9 +51,11 @@ the PDF.
 - `/` — portfolio (`index.html` → `index.tsx`)
 - `/contenido` — page for brands (`contenido.html` → `contenido.tsx`, copy in `data/ugc.ts`).
   Linked from the menu as "Contenido". The old `/ugc` address redirects here (`vercel.json`).
-  Instagram posts shown under "Muestras" come from `instagramPosts` in `data/ugc.ts`: paste
-  links from Instagram's share button (posts, reels or videos). Instagram's embed script loads
-  only when that section gets near the screen.
+  Instagram posts shown under "Muestras" are managed from `/admin` → "Posteos de Instagram":
+  paste a link from Instagram's share button, reorder, remove. They are stored as one ordered
+  list in the Firestore document `content/instagram`; until the first save there, the page
+  shows `defaultInstagramPosts` from `data/ugc.ts`. Instagram's embed script loads only when
+  that section gets near the screen.
 - `/admin` — admin (loaded on demand from `index.tsx`)
 
 `robots.txt` and `sitemap.xml` are generated at build time from `site.config.ts`.
@@ -69,6 +72,27 @@ the PDF.
 5. Update the link in your Instagram bio, and submit `/sitemap.xml` in Google Search Console.
 
 The `vercel.app` address keeps working after the switch.
+
+## Firestore rules
+
+Visitors read `photos` and `content`; only the signed-in admin writes. In the Firebase
+console (Firestore → Rules) the rules should look like this, with your admin UID:
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /photos/{id} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == "ADMIN_UID";
+    }
+    match /content/{id} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == "ADMIN_UID";
+    }
+  }
+}
+```
 
 ## Profile data
 

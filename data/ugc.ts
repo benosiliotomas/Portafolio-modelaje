@@ -21,10 +21,9 @@ export const ugc = {
     { title: 'Propuesta', text: 'Te paso la idea y un guion corto para aprobar antes de grabar.' },
     { title: 'Entrega', text: 'Recibís los archivos editados, listos para publicar.' },
   ] as UgcStep[],
-  // Instagram posts or reels shown in "Muestras", in this order. Paste the link from
-  // Instagram's share button; anything that is not a post is ignored. While the list is
-  // empty the section shows a short "ask me for samples" line instead.
-  instagramPosts: [
+  // Instagram posts for "Muestras" are managed from /admin (Firestore content/instagram).
+  // This list is only the starting point, shown until the first save there.
+  defaultInstagramPosts: [
     'https://www.instagram.com/reel/DZLIEHEySqi/',
     'https://www.instagram.com/reel/DeNkFoFydfE/',
   ] as string[],

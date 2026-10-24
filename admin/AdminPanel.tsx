@@ -1,5 +1,6 @@
 import React from 'react';
 import ImageUploader from './ImageUploader';
+import InstagramPostsPanel from './InstagramPostsPanel';
 import type { PhotoSection } from '../types';
 
 interface AdminPanelProps {
@@ -11,6 +12,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onPhotoAdded }) => (
     <div className="max-w-3xl mx-auto px-4 sm:px-8 py-10">
       <h2 id="admin-heading" className="eyebrow text-stone mt-0 mb-6">Panel de administración · Subir foto</h2>
       <ImageUploader onPhotoAdded={onPhotoAdded} />
+      <InstagramPostsPanel />
     </div>
   </section>
 );

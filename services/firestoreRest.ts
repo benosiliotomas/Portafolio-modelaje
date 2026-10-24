@@ -2,6 +2,7 @@
 // ship the Firebase SDK. Writes and live updates stay in the admin bundle (photoService).
 import { FIREBASE_PROJECT_ID } from './firebaseProject';
 import type { Photo } from '../types';
+import type { SavedPosts } from '../lib/instagramList';
 
 type FirestoreValue =
   | { stringValue: string }
@@ -17,7 +18,10 @@ interface FirestoreDocument {
   fields?: Record<string, FirestoreValue>;
 }
 
-const DOCUMENTS_URL = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/photos`;
+const DATABASE_URL = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents`;
+const DOCUMENTS_URL = `${DATABASE_URL}/photos`;
+/** Ordered Instagram links for /contenido, edited from /admin (see services/instagramService.ts). */
+export const INSTAGRAM_DOC_PATH = ['content', 'instagram'] as const;
 
 export function decodeValue(value: FirestoreValue): unknown {
   if ('stringValue' in value) return value.stringValue;
@@ -62,4 +66,24 @@ export async function fetchPublicPhotos(): Promise<Photo[]> {
   } while (pageToken);
 
   return photos.sort((a, b) => a.order - b.order);
+}
+
+export function documentToSavedPosts(document: FirestoreDocument): SavedPosts {
+  const posts = decodeFields(document.fields ?? {}).posts;
+  return {
+    status: 'saved',
+    posts: Array.isArray(posts) ? posts.filter((p): p is string => typeof p === 'string') : [],
+  };
+}
+
+export async function fetchSavedInstagramPosts(): Promise<SavedPosts> {
+  try {
+    const response = await fetch(`${DATABASE_URL}/${INSTAGRAM_DOC_PATH.join('/')}`);
+    if (response.status === 404) return { status: 'missing' };
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return documentToSavedPosts(await response.json());
+  } catch (err: unknown) {
+    console.error('Failed to load Instagram posts:', err);
+    return { status: 'error' };
+  }
 }
