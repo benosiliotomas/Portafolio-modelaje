@@ -28,7 +28,7 @@ describe('pickUgcPhotos', () => {
 });
 
 describe('ugcMailto', () => {
-  it('pre-fills a UGC subject line', () => {
-    expect(ugcMailto('a@b.com')).toBe('mailto:a@b.com?subject=Consulta%20UGC');
+  it('pre-fills the subject line', () => {
+    expect(ugcMailto('a@b.com')).toBe('mailto:a@b.com?subject=Consulta%20de%20contenido');
   });
 });

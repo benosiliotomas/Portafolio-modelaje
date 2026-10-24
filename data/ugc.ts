@@ -12,10 +12,10 @@ export interface UgcStep {
   text: string;
 }
 
-// Draft copy for /ugc. Formats and process are commitments to brands — adjust them to what
+// Draft copy for /contenido. Formats and process are commitments to brands — adjust them to what
 // you actually deliver before sharing the page.
 export const ugc = {
-  headline: 'UGC para marcas',
+  headline: 'Contenido para marcas',
   intro: 'Videos y fotos verticales para redes y anuncios, hechos por un modelo: pose, encuadre y el producto en primer plano.',
   formats: [
     'Video vertical 9:16 para Reels, TikTok y anuncios',
@@ -30,7 +30,7 @@ export const ugc = {
   ] as UgcStep[],
   // Add links to finished pieces here; the section stays hidden while the list is empty.
   samples: [] as UgcSample[],
-  whatsappMessage: 'Hola Tomás, vi tu página de UGC y quería consultarte por contenido para una marca.',
+  whatsappMessage: 'Hola Tomás, vi tu página de contenido para marcas y quería hacerte una consulta.',
 };
 
 const UGC_LABEL = /comercial|commercial|lifestyle/i;
@@ -41,5 +41,5 @@ export function pickUgcPhotos(photos: Photo[]): Photo[] {
 }
 
 export function ugcMailto(email: string): string {
-  return `mailto:${email}?subject=${encodeURIComponent('Consulta UGC')}`;
+  return `mailto:${email}?subject=${encodeURIComponent('Consulta de contenido')}`;
 }

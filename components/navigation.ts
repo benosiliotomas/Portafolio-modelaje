@@ -9,11 +9,11 @@ const SECTIONS: NavItem[] = [
 
 /**
  * The same menu on every page. On the portfolio the sections are in-page anchors;
- * elsewhere they point back to the portfolio (`/#book`). "Contenido" (/ugc) is always its own page.
+ * elsewhere they point back to the portfolio (`/#book`). "Contenido" (/contenido) is always its own page.
  */
 export function siteNav(onPortfolio: boolean): NavItem[] {
   return [
     ...SECTIONS.map(item => (onPortfolio ? item : { ...item, href: `/#${item.id}` })),
-    { id: 'ugc', label: 'Contenido', href: '/ugc', isPage: true },
+    { id: 'contenido', label: 'Contenido', href: '/contenido', isPage: true },
   ];
 }

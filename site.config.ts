@@ -4,4 +4,4 @@
 export const SITE_URL = 'https://portafolio-modelaje.vercel.app';
 
 /** Public pages, for the sitemap. */
-export const PUBLIC_PATHS = ['/', '/ugc'];
+export const PUBLIC_PATHS = ['/', '/contenido'];

@@ -5,16 +5,16 @@ const SITE = 'https://tomasbenosilio.com';
 
 describe('absoluteUrl', () => {
   it('joins the site and a path without doubling slashes', () => {
-    expect(absoluteUrl('https://tomasbenosilio.com/', '/ugc')).toBe('https://tomasbenosilio.com/ugc');
+    expect(absoluteUrl('https://tomasbenosilio.com/', '/contenido')).toBe('https://tomasbenosilio.com/contenido');
     expect(absoluteUrl(SITE, '/')).toBe('https://tomasbenosilio.com/');
   });
 });
 
 describe('buildSitemap', () => {
   it('lists every public page with an absolute URL', () => {
-    const xml = buildSitemap(SITE, ['/', '/ugc']);
+    const xml = buildSitemap(SITE, ['/', '/contenido']);
     expect(xml).toContain('<loc>https://tomasbenosilio.com/</loc>');
-    expect(xml).toContain('<loc>https://tomasbenosilio.com/ugc</loc>');
+    expect(xml).toContain('<loc>https://tomasbenosilio.com/contenido</loc>');
     expect(xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>')).toBe(true);
   });
 });

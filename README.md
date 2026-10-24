@@ -48,8 +48,8 @@ the PDF.
 ## Pages
 
 - `/` — portfolio (`index.html` → `index.tsx`)
-- `/ugc` — page for brands (`ugc.html` → `ugc.tsx`, copy in `data/ugc.ts`). Not linked from
-  the portfolio menu; send it directly to brands.
+- `/contenido` — page for brands (`contenido.html` → `contenido.tsx`, copy in `data/ugc.ts`).
+  Linked from the menu as "Contenido". The old `/ugc` address redirects here (`vercel.json`).
 - `/admin` — admin (loaded on demand from `index.tsx`)
 
 `robots.txt` and `sitemap.xml` are generated at build time from `site.config.ts`.

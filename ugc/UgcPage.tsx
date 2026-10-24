@@ -33,7 +33,7 @@ const UgcPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header items={siteNav(false)} activeId="ugc" homeHref="/" />
+      <Header items={siteNav(false)} activeId="contenido" homeHref="/" />
 
       <main className="flex-1">
         <section aria-labelledby="ugc-heading" className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-20 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 lg:items-end">

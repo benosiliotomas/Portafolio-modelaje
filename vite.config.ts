@@ -13,10 +13,18 @@ const siteUrlPlugin = (): Plugin => ({
     this.emitFile({ type: 'asset', fileName: 'robots.txt', source: buildRobots(SITE_URL) });
     this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: buildSitemap(SITE_URL, PUBLIC_PATHS) });
   },
-  // Vercel serves /ugc from ugc.html (cleanUrls); mirror that in the dev server.
+  // Mirror vercel.json in the dev server: /contenido is served from contenido.html
+  // (cleanUrls) and the old /ugc address redirects to it.
   configureServer(server) {
-    server.middlewares.use((req, _res, next) => {
-      if (req.url === '/ugc' || req.url?.startsWith('/ugc?')) req.url = req.url.replace('/ugc', '/ugc.html');
+    server.middlewares.use((req, res, next) => {
+      const [path, query = ''] = (req.url ?? '').split('?');
+      if (path === '/ugc') {
+        res.statusCode = 308;
+        res.setHeader('Location', `/contenido${query ? `?${query}` : ''}`);
+        res.end();
+        return;
+      }
+      if (path === '/contenido') req.url = `/contenido.html${query ? `?${query}` : ''}`;
       next();
     });
   },
@@ -32,7 +40,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html'),
-        ugc: path.resolve(__dirname, 'ugc.html'),
+        contenido: path.resolve(__dirname, 'contenido.html'),
       },
     },
   },
