@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { embedGridClass } from '../lib/instagram';
 import type { InstagramPost } from '../lib/instagram';
 
 declare global {
@@ -76,11 +77,11 @@ const InstagramEmbeds: React.FC<InstagramEmbedsProps> = ({ posts }) => {
     <>
       <ul
         ref={containerRef}
-        className="instagram-embeds list-none p-0 m-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start"
+        className={`instagram-embeds list-none p-0 m-0 grid gap-6 items-start ${embedGridClass(posts.length)}`}
         aria-busy={status === 'idle'}
       >
         {posts.map(post => (
-          <li key={post.shortcode} className="w-full max-w-[540px] mx-auto" dangerouslySetInnerHTML={{ __html: embedMarkup(post) }} />
+          <li key={post.shortcode} className="w-full max-w-[420px] mx-auto" dangerouslySetInnerHTML={{ __html: embedMarkup(post) }} />
         ))}
       </ul>
       {status === 'failed' && (

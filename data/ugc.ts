@@ -24,7 +24,10 @@ export const ugc = {
   // Instagram posts or reels shown in "Muestras", in this order. Paste the link from
   // Instagram's share button; anything that is not a post is ignored. While the list is
   // empty the section shows a short "ask me for samples" line instead.
-  instagramPosts: [] as string[],
+  instagramPosts: [
+    'https://www.instagram.com/reel/DZLIEHEySqi/',
+    'https://www.instagram.com/reel/DeNkFoFydfE/',
+  ] as string[],
   whatsappMessage: 'Hola Tomás, vi tu página de contenido para marcas y quería hacerte una consulta.',
 };
 

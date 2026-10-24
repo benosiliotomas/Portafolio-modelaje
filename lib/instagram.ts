@@ -46,3 +46,12 @@ export function parseInstagramUrls(inputs: string[]): InstagramPost[] {
   }
   return posts;
 }
+
+/** Grid for the embeds: as many columns as posts (up to three), centred, never an empty column.
+ *  Each embed is capped at 420px so a vertical reel and its likes fit on a laptop screen. */
+export function embedGridClass(count: number): string {
+  if (count <= 1) return 'grid-cols-1 max-w-[420px] mx-auto';
+  // Two embeds at their maximum width plus the 24px gap.
+  if (count === 2) return 'grid-cols-1 md:grid-cols-2 max-w-[864px] mx-auto';
+  return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
+}

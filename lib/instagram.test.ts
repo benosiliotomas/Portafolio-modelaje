@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseInstagramUrl, parseInstagramUrls } from './instagram';
+import { parseInstagramUrl, parseInstagramUrls, embedGridClass } from './instagram';
 
 describe('parseInstagramUrl', () => {
   it('reads a reel link copied from the share button', () => {
@@ -41,5 +41,17 @@ describe('parseInstagramUrls', () => {
       'https://www.instagram.com/p/BBB/',
     ]);
     expect(posts.map(p => p.shortcode)).toEqual(['AAA', 'BBB']);
+  });
+});
+
+describe('embedGridClass', () => {
+  it('never leaves empty columns for one or two posts', () => {
+    expect(embedGridClass(1)).toBe('grid-cols-1 max-w-[420px] mx-auto');
+    expect(embedGridClass(2)).toBe('grid-cols-1 md:grid-cols-2 max-w-[864px] mx-auto');
+  });
+
+  it('uses three columns on desktop from three posts on', () => {
+    expect(embedGridClass(3)).toBe('grid-cols-1 md:grid-cols-2 lg:grid-cols-3');
+    expect(embedGridClass(7)).toBe('grid-cols-1 md:grid-cols-2 lg:grid-cols-3');
   });
 });
