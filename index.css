@@ -50,6 +50,42 @@ h3 {
   text-transform: uppercase;
 }
 
+/* Instagram posts before (or without) Instagram's script: a quiet link card in the
+   site's own style. Once the script runs, it swaps each card for its iframe. */
+.instagram-embeds blockquote.instagram-media:not(.instagram-media-rendered) {
+  margin: 0;
+  padding: 0;
+  aspect-ratio: 4 / 5;
+  display: flex;
+  align-items: flex-end;
+  background: var(--color-surface);
+  border: 1px solid var(--color-hairline);
+}
+
+.instagram-embeds blockquote.instagram-media:not(.instagram-media-rendered) a {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+.instagram-embeds blockquote.instagram-media:not(.instagram-media-rendered) a:hover {
+  color: var(--color-clay);
+}
+
+/* Instagram sizes its iframe from the blockquote's inline width, which we don't set, so
+   the rendered embed would shrink to its 326px minimum; fill the column instead. */
+.instagram-embeds iframe.instagram-media-rendered {
+  width: 100%;
+  max-width: 540px;
+  /* Instagram sets min-width: 326px inline, wider than a 320px phone's column. */
+  min-width: 0 !important;
+}
+
 /* Name plus every link must fit a 320px phone without wrapping. */
 @media (max-width: 399px) {
   .nav-link {

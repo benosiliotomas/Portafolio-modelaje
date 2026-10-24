@@ -6,10 +6,14 @@ import { SectionHeading } from '../components/BookSection';
 import { fetchPublicPhotos } from '../services/firestoreRest';
 import { profile } from '../data/profile';
 import { ugc, pickUgcPhotos, ugcMailto } from '../data/ugc';
+import { parseInstagramUrls } from '../lib/instagram';
+import InstagramEmbeds from './InstagramEmbeds';
 import type { Photo } from '../types';
 
 const instagramUrl = profile.instagram ? `https://instagram.com/${profile.instagram}` : null;
 const whatsappUrl = `https://wa.me/${profile.phoneE164.replace('+', '')}?text=${encodeURIComponent(ugc.whatsappMessage)}`;
+
+const instagramPosts = parseInstagramUrls(ugc.instagramPosts);
 
 const linkClass = 'eyebrow text-ink border-b border-ink pb-1 hover:text-clay hover:border-clay transition-colors duration-150';
 
@@ -89,17 +93,8 @@ const UgcPage: React.FC = () => {
 
         <section aria-labelledby="muestras-heading" className="max-w-7xl mx-auto px-4 sm:px-8 pt-[var(--space-section)]">
           <div className="-mx-4 sm:mx-0"><SectionHeading id="muestras-heading" number="03" title="Muestras" /></div>
-          {ugc.samples.length > 0 ? (
-            <ul className="list-none p-0 m-0 border-t border-hairline">
-              {ugc.samples.map(sample => (
-                <li key={sample.url} className="border-b border-hairline">
-                  <a href={sample.url} target="_blank" rel="noopener noreferrer" className="group flex items-baseline justify-between gap-4 py-5">
-                    <span className="eyebrow text-ash">{sample.brand ?? 'Muestra'}</span>
-                    <span className="text-ink text-[15px] text-right group-hover:text-clay transition-colors duration-150">{sample.title} →</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
+          {instagramPosts.length > 0 ? (
+            <InstagramEmbeds posts={instagramPosts} />
           ) : (
             <p className="text-stone text-[15px] m-0">
               Te mando ejemplos según tu rubro.{' '}

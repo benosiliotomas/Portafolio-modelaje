@@ -50,6 +50,9 @@ the PDF.
 - `/` — portfolio (`index.html` → `index.tsx`)
 - `/contenido` — page for brands (`contenido.html` → `contenido.tsx`, copy in `data/ugc.ts`).
   Linked from the menu as "Contenido". The old `/ugc` address redirects here (`vercel.json`).
+  Instagram posts shown under "Muestras" come from `instagramPosts` in `data/ugc.ts`: paste
+  links from Instagram's share button (posts, reels or videos). Instagram's embed script loads
+  only when that section gets near the screen.
 - `/admin` — admin (loaded on demand from `index.tsx`)
 
 `robots.txt` and `sitemap.xml` are generated at build time from `site.config.ts`.

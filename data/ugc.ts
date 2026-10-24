@@ -1,12 +1,5 @@
 import type { Photo } from '../types';
 
-export interface UgcSample {
-  title: string;
-  /** Public link to the post: Instagram, TikTok, Drive, etc. */
-  url: string;
-  brand?: string;
-}
-
 export interface UgcStep {
   title: string;
   text: string;
@@ -28,8 +21,10 @@ export const ugc = {
     { title: 'Propuesta', text: 'Te paso la idea y un guion corto para aprobar antes de grabar.' },
     { title: 'Entrega', text: 'Recibís los archivos editados, listos para publicar.' },
   ] as UgcStep[],
-  // Add links to finished pieces here; the section stays hidden while the list is empty.
-  samples: [] as UgcSample[],
+  // Instagram posts or reels shown in "Muestras", in this order. Paste the link from
+  // Instagram's share button; anything that is not a post is ignored. While the list is
+  // empty the section shows a short "ask me for samples" line instead.
+  instagramPosts: [] as string[],
   whatsappMessage: 'Hola Tomás, vi tu página de contenido para marcas y quería hacerte una consulta.',
 };
 
