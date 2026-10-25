@@ -34,3 +34,12 @@ export function pickImageFile<T extends FileLike>(files: T[]): PickResult<T> {
     ? { file, notice: `Soltaste ${files.length} archivos: se usa el primero. Las fotos se suben de a una.` }
     : { file };
 }
+
+/** Below this width a photo gets visibly soft in the cover and the full-screen viewer. */
+export const RECOMMENDED_MIN_WIDTH = 1600;
+
+export function resolutionWarning(width: number): string | null {
+  return width < RECOMMENDED_MIN_WIDTH
+    ? `Esta foto mide ${width} px de ancho: en pantallas grandes se va a ver poco nítida. Para la mejor calidad, exportala a 2000 px de ancho.`
+    : null;
+}

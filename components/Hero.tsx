@@ -12,14 +12,19 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ cover, onOpen, controls }) => (
   <section id="top" aria-labelledby="hero-name" className="max-w-7xl mx-auto sm:px-8 sm:pt-8 grid grid-cols-1 lg:grid-cols-12 lg:gap-12 lg:items-end">
-    {/* On desktop the cover fits the first screen so the name and contact link stay above the fold. */}
-    <div className="relative group lg:col-span-7 aspect-[4/5] lg:aspect-auto lg:h-[calc(100svh-6rem)] lg:min-h-[32rem] bg-hairline overflow-hidden">
-      {cover && (
-        <button onClick={() => onOpen(cover)} className="block w-full h-full" aria-label="Ver la foto de portada en grande">
-          <PhotoImage photo={cover} index={0} sizes="(min-width: 1024px) 58vw, 100vw" priority />
-        </button>
-      )}
-      {controls}
+    {/* The cover stays a vertical 4:5 frame. On desktop it is sized from the screen height so the
+        name and contact link stay above the fold, instead of stretching into a square that crops
+        the head off portrait photos. */}
+    <div className="lg:col-span-7">
+      <div className="relative group aspect-[4/5] lg:w-[min(100%,calc((100svh-6rem)*0.8))] bg-hairline overflow-hidden">
+        {cover && (
+          <button onClick={() => onOpen(cover)} className="block w-full h-full" aria-label="Ver la foto de portada en grande">
+            {/* Faces sit in the upper part of a portrait, so the crop is anchored near the top. */}
+            <PhotoImage photo={cover} index={0} sizes="(min-width: 1024px) 58vw, 100vw" priority className="object-[50%_15%]" />
+          </button>
+        )}
+        {controls}
+      </div>
     </div>
 
     <div className="px-4 sm:px-0 pt-6 pb-12 lg:pb-2 lg:col-span-5">

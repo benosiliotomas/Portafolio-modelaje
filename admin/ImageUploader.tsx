@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { UploadIcon } from '../components/icons';
-import { ACCEPTED_TYPES, pickImageFile } from '../lib/uploadValidation';
+import { ACCEPTED_TYPES, pickImageFile, resolutionWarning } from '../lib/uploadValidation';
 import type { PhotoSection } from '../types';
 
 const hasFiles = (e: DragEvent | React.DragEvent): boolean =>
@@ -50,7 +50,15 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onPhotoAdded }) => {
     }
     setError(null);
     setFile(result.file);
-    setPreview(URL.createObjectURL(result.file));
+    const url = URL.createObjectURL(result.file);
+    setPreview(url);
+    // Read the pixel size before uploading, so a wrong (too small) export is caught here.
+    const probe = new Image();
+    probe.onload = () => {
+      const warning = resolutionWarning(probe.naturalWidth);
+      if (warning) setNotice(current => (current ? `${current} ${warning}` : warning));
+    };
+    probe.src = url;
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { pickImageFile, MAX_FILE_BYTES } from './uploadValidation';
+import { pickImageFile, resolutionWarning, MAX_FILE_BYTES } from './uploadValidation';
 
 const file = (name: string, type: string, size = 1000) => ({ name, type, size });
 
@@ -40,5 +40,18 @@ describe('pickImageFile', () => {
 
   it('asks for a file when nothing was dropped', () => {
     expect(pickImageFile([])).toEqual({ error: 'No llegó ningún archivo. Probá arrastrar la foto otra vez.' });
+  });
+});
+
+describe('resolutionWarning', () => {
+  it('warns when the photo is too narrow to look sharp on large screens', () => {
+    expect(resolutionWarning(724)).toBe(
+      'Esta foto mide 724 px de ancho: en pantallas grandes se va a ver poco nítida. Para la mejor calidad, exportala a 2000 px de ancho.'
+    );
+  });
+
+  it('stays quiet from 1600px on', () => {
+    expect(resolutionWarning(1600)).toBeNull();
+    expect(resolutionWarning(2000)).toBeNull();
   });
 });
