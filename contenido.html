@@ -26,7 +26,10 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..500&family=IBM+Plex+Mono:wght@400;500&display=swap"
     rel="stylesheet">
-  <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossorigin>
+  <!-- The Instagram list comes from Firestore and the reels from Instagram: open both
+       connections while the page itself is still loading. -->
+  <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://www.instagram.com">
   <link rel="stylesheet" href="/index.css">
 </head>
 

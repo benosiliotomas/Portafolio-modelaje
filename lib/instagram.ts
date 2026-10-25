@@ -55,3 +55,28 @@ export function embedGridClass(count: number): string {
   if (count === 2) return 'grid-cols-1 md:grid-cols-2 max-w-[864px] mx-auto';
   return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
 }
+
+/** Instagram's own embed page for a post; the same URL its embed.js script would insert. */
+export function embedUrl(post: InstagramPost): string {
+  return `${post.permalink}embed/`;
+}
+
+const MAX_EMBED_HEIGHT = 3000;
+
+/**
+ * The embed page posts `{"type":"MEASURE","details":{"height":N}}` (as a JSON string) to its
+ * parent once it has laid out. Returns that height, or null for any other message.
+ */
+export function parseMeasureMessage(data: unknown): number | null {
+  if (typeof data !== 'string') return null;
+  try {
+    const message: unknown = JSON.parse(data);
+    if (typeof message !== 'object' || message === null) return null;
+    const { type, details } = message as { type?: unknown; details?: { height?: unknown } };
+    const height = details?.height;
+    if (type !== 'MEASURE' || typeof height !== 'number') return null;
+    return height > 0 && height <= MAX_EMBED_HEIGHT ? Math.round(height) : null;
+  } catch {
+    return null;
+  }
+}

@@ -54,8 +54,9 @@ the PDF.
   Instagram posts shown under "Muestras" are managed from `/admin` → "Posteos de Instagram":
   paste a link from Instagram's share button, reorder, remove. They are stored as one ordered
   list in the Firestore document `content/instagram`; until the first save there, the page
-  shows `defaultInstagramPosts` from `data/ugc.ts`. Instagram's embed script loads only when
-  that section gets near the screen.
+  shows `defaultInstagramPosts` from `data/ugc.ts`. Each post is an iframe of Instagram's
+  embed page, inserted directly (Instagram's embed.js waits ~10 s before doing the same);
+  its height comes from the page's `MEASURE` message.
 - `/admin` — admin (loaded on demand from `index.tsx`)
 
 `robots.txt` and `sitemap.xml` are generated at build time from `site.config.ts`.

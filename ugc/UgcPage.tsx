@@ -13,6 +13,9 @@ import InstagramEmbeds from './InstagramEmbeds';
 const instagramUrl = profile.instagram ? `https://instagram.com/${profile.instagram}` : null;
 const whatsappUrl = `https://wa.me/${profile.phoneE164.replace('+', '')}?text=${encodeURIComponent(ugc.whatsappMessage)}`;
 
+// Started when the module loads, not when React mounts, so the request overlaps start-up.
+const savedPostsPromise = fetchSavedInstagramPosts();
+
 const linkClass = 'eyebrow text-ink border-b border-ink pb-1 hover:text-clay hover:border-clay transition-colors duration-150';
 
 const UgcPage: React.FC = () => {
@@ -21,7 +24,7 @@ const UgcPage: React.FC = () => {
 
   useEffect(() => {
     let cancelled = false;
-    fetchSavedInstagramPosts().then(saved => {
+    savedPostsPromise.then(saved => {
       if (!cancelled) setInstagramPosts(parseInstagramUrls(resolvePostLinks(saved, ugc.defaultInstagramPosts)));
     });
     return () => { cancelled = true; };

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseInstagramUrl, parseInstagramUrls, embedGridClass } from './instagram';
+import { parseInstagramUrl, parseInstagramUrls, embedGridClass, embedUrl, parseMeasureMessage } from './instagram';
 
 describe('parseInstagramUrl', () => {
   it('reads a reel link copied from the share button', () => {
@@ -53,5 +53,30 @@ describe('embedGridClass', () => {
   it('uses three columns on desktop from three posts on', () => {
     expect(embedGridClass(3)).toBe('grid-cols-1 md:grid-cols-2 lg:grid-cols-3');
     expect(embedGridClass(7)).toBe('grid-cols-1 md:grid-cols-2 lg:grid-cols-3');
+  });
+});
+
+describe('embedUrl', () => {
+  it('points at Instagram\'s embed page for the post', () => {
+    expect(embedUrl({ kind: 'reel', shortcode: 'AAA', permalink: 'https://www.instagram.com/reel/AAA/' }))
+      .toBe('https://www.instagram.com/reel/AAA/embed/');
+  });
+});
+
+describe('parseMeasureMessage', () => {
+  it('reads the height Instagram reports for its embed', () => {
+    expect(parseMeasureMessage('{"details":{"height":709},"type":"MEASURE"}')).toBe(709);
+  });
+
+  it('ignores other messages and malformed data', () => {
+    expect(parseMeasureMessage('{"details":{},"type":"LOADING"}')).toBeNull();
+    expect(parseMeasureMessage('not json')).toBeNull();
+    expect(parseMeasureMessage({ type: 'MEASURE', details: { height: 500 } })).toBeNull();
+  });
+
+  it('rejects implausible heights', () => {
+    expect(parseMeasureMessage('{"details":{"height":-5},"type":"MEASURE"}')).toBeNull();
+    expect(parseMeasureMessage('{"details":{"height":99999},"type":"MEASURE"}')).toBeNull();
+    expect(parseMeasureMessage('{"details":{"height":"709"},"type":"MEASURE"}')).toBeNull();
   });
 });
