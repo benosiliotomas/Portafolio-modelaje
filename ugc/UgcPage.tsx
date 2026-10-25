@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
-import PhotoImage from '../components/PhotoImage';
 import { siteNav } from '../components/navigation';
 import { SectionHeading } from '../components/BookSection';
-import { fetchPublicPhotos, fetchSavedInstagramPosts } from '../services/firestoreRest';
+import { fetchSavedInstagramPosts } from '../services/firestoreRest';
 import { profile } from '../data/profile';
-import { ugc, pickUgcPhotos, ugcMailto } from '../data/ugc';
+import { ugc, ugcMailto } from '../data/ugc';
 import { parseInstagramUrls } from '../lib/instagram';
 import type { InstagramPost } from '../lib/instagram';
 import { resolvePostLinks } from '../lib/instagramList';
 import InstagramEmbeds from './InstagramEmbeds';
-import type { Photo } from '../types';
 
 const instagramUrl = profile.instagram ? `https://instagram.com/${profile.instagram}` : null;
 const whatsappUrl = `https://wa.me/${profile.phoneE164.replace('+', '')}?text=${encodeURIComponent(ugc.whatsappMessage)}`;
@@ -18,16 +16,11 @@ const whatsappUrl = `https://wa.me/${profile.phoneE164.replace('+', '')}?text=${
 const linkClass = 'eyebrow text-ink border-b border-ink pb-1 hover:text-clay hover:border-clay transition-colors duration-150';
 
 const UgcPage: React.FC = () => {
-  const [photos, setPhotos] = useState<Photo[]>([]);
   // null while loading, so the defaults never flash before the saved list.
   const [instagramPosts, setInstagramPosts] = useState<InstagramPost[] | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    fetchPublicPhotos()
-      .then(all => { if (!cancelled) setPhotos(pickUgcPhotos(all)); })
-      // The page reads fine without the photo strip, so a failed fetch only hides it.
-      .catch((err: unknown) => console.error('Failed to load photos:', err));
     fetchSavedInstagramPosts().then(saved => {
       if (!cancelled) setInstagramPosts(parseInstagramUrls(resolvePostLinks(saved, ugc.defaultInstagramPosts)));
     });
@@ -45,8 +38,8 @@ const UgcPage: React.FC = () => {
       <Header items={siteNav(false)} activeId="contenido" homeHref="/" />
 
       <main className="flex-1">
-        <section aria-labelledby="ugc-heading" className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-20 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 lg:items-end">
-          <div className="lg:col-span-6">
+        <section aria-labelledby="ugc-heading" className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-20">
+          <div className="max-w-3xl">
             <p className="eyebrow text-stone m-0">{profile.name} · Creador de contenido</p>
             <h1 id="ugc-heading" className="text-5xl sm:text-6xl lg:text-7xl leading-[1.02] text-ink mt-4 mb-6">{ugc.headline}</h1>
             <p className="font-display text-xl leading-relaxed text-stone m-0 max-w-lg">{ugc.intro}</p>
@@ -59,16 +52,6 @@ const UgcPage: React.FC = () => {
               )}
             </div>
           </div>
-
-          {photos.length > 0 && (
-            <ul className="lg:col-span-6 grid grid-cols-3 gap-2 sm:gap-3 list-none p-0 m-0" aria-label="Fotos comerciales">
-              {photos.map((photo, index) => (
-                <li key={photo.id} className="aspect-[4/5] overflow-hidden bg-hairline">
-                  <PhotoImage photo={photo} index={index} sizes="(min-width: 1024px) 16vw, 32vw" priority={index === 0} />
-                </li>
-              ))}
-            </ul>
-          )}
         </section>
 
         <section aria-labelledby="formatos-heading" className="max-w-7xl mx-auto px-4 sm:px-8 pt-[var(--space-section)]">

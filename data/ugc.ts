@@ -1,5 +1,3 @@
-import type { Photo } from '../types';
-
 export interface UgcStep {
   title: string;
   text: string;
@@ -29,13 +27,6 @@ export const ugc = {
   ] as string[],
   whatsappMessage: 'Hola Tomás, vi tu página de contenido para marcas y quería hacerte una consulta.',
 };
-
-const UGC_LABEL = /comercial|commercial|lifestyle/i;
-const STRIP_SIZE = 3;
-
-export function pickUgcPhotos(photos: Photo[]): Photo[] {
-  return photos.filter(p => !p.hidden && UGC_LABEL.test(p.alt)).slice(0, STRIP_SIZE);
-}
 
 export function ugcMailto(email: string): string {
   return `mailto:${email}?subject=${encodeURIComponent('Consulta de contenido')}`;
