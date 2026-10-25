@@ -3,8 +3,10 @@
 //
 //   npm run optimize-photos -- --dry-run   # read-only: shows the size savings
 //   npm run optimize-photos                # asks for the admin password, then writes
+//   npm run optimize-photos -- --force     # rebuilds variants from the stored originals
 //
-// Original files stay in Storage untouched; only the documents change.
+// Original files stay in Storage untouched; only the documents change. Photos uploaded
+// from /admin after compression existed have no stored original and are skipped by --force.
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, collection, getDocs, doc, updateDoc } from 'firebase/firestore';
@@ -44,8 +46,9 @@ const mb = (bytes) => `${(bytes / 1024 / 1024).toFixed(2)} MB`;
 
 async function buildVariants(buffer) {
   const { width, height } = await sharp(buffer).rotate().metadata();
-  const widths = VARIANT_WIDTHS.filter((w) => w <= width);
-  const targets = widths.length > 0 ? widths : [width];
+  // Same rule as lib/photoUtils.targetWidths: the largest size is the original width, capped at 2000px.
+  const largest = Math.min(width, VARIANT_WIDTHS[VARIANT_WIDTHS.length - 1]);
+  const targets = [...VARIANT_WIDTHS.filter((w) => w < largest), largest];
   const variants = await Promise.all(targets.map(async (w) => ({
     width: w,
     data: await sharp(buffer).rotate().resize({ width: w }).webp({ quality: WEBP_QUALITY }).toBuffer(),
@@ -81,7 +84,12 @@ async function main() {
       console.log(`- ${photo.id} ya optimizada, se omite`);
       continue;
     }
-    const response = await fetch(photo.url);
+    if (photo.variants?.length && !photo.originalUrl) {
+      console.log(`- ${photo.id} se subió desde /admin y no tiene original guardado: para mejorarla, volvé a subirla`);
+      continue;
+    }
+    const sourceUrl = photo.originalUrl ?? photo.url;
+    const response = await fetch(sourceUrl);
     if (!response.ok) {
       console.error(`! ${photo.id}: no se pudo descargar (${response.status})`);
       continue;
@@ -104,7 +112,7 @@ async function main() {
       uploaded.push({ width: v.width, url: await getDownloadURL(storageRef) });
     }
     await updateDoc(doc(db, 'photos', photo.id), {
-      originalUrl: photo.url,
+      originalUrl: sourceUrl,
       url: uploaded[uploaded.length - 1].url,
       variants: uploaded,
       width,

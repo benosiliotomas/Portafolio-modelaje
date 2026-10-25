@@ -7,6 +7,7 @@ import {
   ageOn,
   cmToInches,
   metersToFeetInches,
+  isUnderSized,
 } from './photoUtils';
 import type { Photo } from '../types';
 
@@ -19,12 +20,18 @@ const photo = (overrides: Partial<Photo> = {}): Photo => ({
 });
 
 describe('targetWidths', () => {
-  it('keeps only the widths that do not upscale the original', () => {
-    expect(targetWidths(1600)).toEqual([480, 1080]);
+  it('keeps the original width as the largest size, so nothing above 1080px is lost', () => {
+    expect(targetWidths(1600)).toEqual([480, 1080, 1600]);
   });
 
-  it('returns every width for large originals', () => {
+  it('keeps a mid-size photo at full resolution instead of shrinking it to 480px', () => {
+    expect(targetWidths(724)).toEqual([480, 724]);
+    expect(targetWidths(900)).toEqual([480, 900]);
+  });
+
+  it('caps large originals at 2000px', () => {
     expect(targetWidths(3182)).toEqual([480, 1080, 2000]);
+    expect(targetWidths(2000)).toEqual([480, 1080, 2000]);
   });
 
   it('falls back to the original width when it is smaller than every target', () => {
@@ -100,5 +107,24 @@ describe('unit conversion', () => {
 
   it('converts metres to feet and inches', () => {
     expect(metersToFeetInches(1.85)).toBe(`6'1"`);
+  });
+});
+
+describe('isUnderSized', () => {
+  const withVariants = (width: number, widths: number[]) =>
+    photo({ width, variants: widths.map(w => ({ width: w, url: `u/${w}` })) });
+
+  it('flags photos whose largest stored size is below what the original allowed', () => {
+    expect(isUnderSized(withVariants(724, [480]))).toBe(true);
+    expect(isUnderSized(withVariants(1365, [480, 1080]))).toBe(true);
+  });
+
+  it('accepts photos stored at full size or at the 2000px cap', () => {
+    expect(isUnderSized(withVariants(724, [480, 724]))).toBe(false);
+    expect(isUnderSized(withVariants(3182, [480, 1080, 2000]))).toBe(false);
+  });
+
+  it('ignores photos without size information', () => {
+    expect(isUnderSized(photo())).toBe(false);
   });
 });

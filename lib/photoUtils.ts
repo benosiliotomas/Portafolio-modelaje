@@ -5,9 +5,14 @@ export const MODEL_NAME = 'Tomás Benosilio';
 // Rendered widths: phone (1 column), tablet/desktop grid, full-screen viewer.
 export const VARIANT_WIDTHS = [480, 1080, 2000] as const;
 
+/**
+ * Sizes to generate for an upload. The largest is always the original width (capped at
+ * 2000px), so a 724px photo is kept at 724px rather than stopping at the 480px step.
+ */
 export function targetWidths(originalWidth: number): number[] {
-  const widths = VARIANT_WIDTHS.filter(w => w <= originalWidth);
-  return widths.length > 0 ? widths : [originalWidth];
+  const largest = Math.min(originalWidth, VARIANT_WIDTHS[VARIANT_WIDTHS.length - 1]);
+  const smaller = VARIANT_WIDTHS.filter(w => w < largest);
+  return [...smaller, largest];
 }
 
 export function buildSrcSet(photo: Photo): string | undefined {
@@ -51,4 +56,14 @@ export function cmToInches(cm: number): string {
 export function metersToFeetInches(meters: number): string {
   const totalInches = Math.round((meters * 100) / 2.54);
   return `${Math.floor(totalInches / 12)}'${totalInches % 12}"`;
+}
+
+/**
+ * True for photos uploaded before the size fix: their largest stored version is smaller than
+ * the original allowed (e.g. a 724px photo kept only at 480px). The admin shows a re-upload hint.
+ */
+export function isUnderSized(photo: Photo): boolean {
+  if (!photo.width || !photo.variants?.length) return false;
+  const expected = Math.min(photo.width, VARIANT_WIDTHS[VARIANT_WIDTHS.length - 1]);
+  return Math.max(...photo.variants.map(v => v.width)) < expected;
 }
