@@ -47,10 +47,30 @@ async function download(url: string): Promise<Buffer> {
 const largestUrl = (photo: Photo): string =>
   photo.variants?.length ? [...photo.variants].sort((a, b) => b.width - a.width)[0].url : photo.url;
 
+// Same rule as the site's cover (object-position 50% 15%): faces sit in the upper part of a
+// portrait, so a centred crop would cut the top of the head off.
+const CROP_FOCUS_Y = 0.15;
+
 async function drawPhoto(pdf: PDFDocument, page: PDFPage, photo: Photo, x: number, y: number, width: number, height: number) {
-  const jpeg = await sharp(await download(largestUrl(photo)))
-    .rotate()
-    .resize({ width: Math.round(width * PIXELS_PER_POINT), height: Math.round(height * PIXELS_PER_POINT), fit: 'cover' })
+  const targetWidth = Math.round(width * PIXELS_PER_POINT);
+  const targetHeight = Math.round(height * PIXELS_PER_POINT);
+  const source = sharp(await download(largestUrl(photo))).rotate();
+  const { width: sourceWidth = targetWidth, height: sourceHeight = targetHeight } = await source.metadata();
+  // EXIF orientations 5–8 swap width and height after rotate().
+  const { orientation = 1 } = await source.metadata();
+  const [w, h] = orientation >= 5 ? [sourceHeight, sourceWidth] : [sourceWidth, sourceHeight];
+
+  const scale = Math.max(targetWidth / w, targetHeight / h);
+  const scaledWidth = Math.round(w * scale);
+  const scaledHeight = Math.round(h * scale);
+  const jpeg = await source
+    .resize({ width: scaledWidth, height: scaledHeight })
+    .extract({
+      left: Math.round((scaledWidth - targetWidth) / 2),
+      top: Math.round((scaledHeight - targetHeight) * CROP_FOCUS_Y),
+      width: targetWidth,
+      height: targetHeight,
+    })
     .jpeg({ quality: 85, mozjpeg: true })
     .toBuffer();
   page.drawImage(await pdf.embedJpg(jpeg), { x, y, width, height });
@@ -100,7 +120,7 @@ async function main() {
   const frontPhotoHeight = 470;
   await drawPhoto(pdf, front, cover, MARGIN, PAGE.height - MARGIN - frontPhotoHeight, innerWidth, frontPhotoHeight);
   front.drawText(profile.name, { x: MARGIN, y: 58, size: 30, font: display, color: INK });
-  drawTracked(front, `${profile.role} · ${profile.location} / Buenos Aires`.toUpperCase(), MARGIN, 38, mono, 6.5);
+  drawTracked(front, `${profile.role} · ${profile.location}`.toUpperCase(), MARGIN, 38, mono, 6.5);
 
   // Back: 2×2 photos, measurements, contact.
   const back = addPage();

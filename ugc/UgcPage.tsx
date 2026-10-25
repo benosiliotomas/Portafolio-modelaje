@@ -99,7 +99,7 @@ const UgcPage: React.FC = () => {
         <section id="contacto" aria-labelledby="contacto-heading" className="max-w-7xl mx-auto px-4 sm:px-8 py-[var(--space-section)] scroll-mt-14">
           <div className="-mx-4 sm:mx-0"><SectionHeading id="contacto-heading" number="04" title="Contacto" /></div>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <p className="eyebrow text-stone m-0 lg:col-span-5">{profile.location} · {profile.availability}</p>
+            <p className="eyebrow text-stone m-0 lg:col-span-5">{profile.location}</p>
             <ul className="list-none p-0 m-0 border-t border-hairline lg:col-span-7">
               {contacts.map(link => (
                 <li key={link.label} className="border-b border-hairline">

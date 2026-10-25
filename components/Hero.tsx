@@ -28,7 +28,7 @@ const Hero: React.FC<HeroProps> = ({ cover, onOpen, controls }) => (
     </div>
 
     <div className="px-4 sm:px-0 pt-6 pb-12 lg:pb-2 lg:col-span-5">
-      <p className="eyebrow text-stone m-0">{profile.role} · {profile.location} / Buenos Aires</p>
+      <p className="eyebrow text-stone m-0">{profile.role} · {profile.location}</p>
       <h1 id="hero-name" className="text-5xl sm:text-6xl lg:text-7xl leading-[1.02] text-ink mt-4 mb-5">
         {profile.name}
       </h1>

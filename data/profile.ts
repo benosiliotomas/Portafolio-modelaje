@@ -16,8 +16,7 @@ const HIPS_CM = 95;
 export const profile = {
   name: 'Tomás Benosilio',
   role: 'Modelo',
-  location: 'Mar del Plata',
-  availability: 'Disponible en Buenos Aires',
+  location: 'Buenos Aires, Argentina',
   email: 'benosiliotomas@gmail.com',
   phoneDisplay: '+54 9 223 635 2632',
   phoneE164: '+5492236352632',
