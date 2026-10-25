@@ -114,7 +114,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ photos, isLoading, error, admin, 
           index={viewer.index}
           total={viewer.list.length}
           onClose={close}
-          onUpdateDetails={(id, alt, concept) => admin?.onUpdateDetails(id, alt, concept)}
+          onUpdateCaption={(id, caption) => admin?.onUpdateCaption(id, caption)}
           onNext={next}
           onPrevious={previous}
           hasNext={viewer.index < viewer.list.length - 1}

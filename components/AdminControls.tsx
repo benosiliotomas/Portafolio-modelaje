@@ -5,7 +5,7 @@ import { isUnderSized } from '../lib/photoUtils';
 import type { Photo, PhotoSection } from '../types';
 
 export interface AdminActions {
-  onUpdateDetails: (photoId: string, alt: string, concept: string) => void;
+  onUpdateCaption: (photoId: string, caption: string) => void;
   onDelete: (photo: Photo) => void;
   onToggleHidden: (photo: Photo) => void;
   onMove: (photo: Photo, direction: -1 | 1) => void;

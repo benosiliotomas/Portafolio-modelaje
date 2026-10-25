@@ -4,7 +4,7 @@ import InstagramPostsPanel from './InstagramPostsPanel';
 import type { PhotoSection } from '../types';
 
 interface AdminPanelProps {
-  onPhotoAdded: (photoData: { alt: string; image: Blob; section: PhotoSection }) => Promise<void>;
+  onPhotoAdded: (photoData: { caption: string; image: Blob; section: PhotoSection }) => Promise<void>;
 }
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ onPhotoAdded }) => (

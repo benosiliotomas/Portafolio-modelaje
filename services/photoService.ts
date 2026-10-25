@@ -56,7 +56,7 @@ export const subscribeToPhotos = (
 };
 
 // Add a new photo: resized in the browser, so only optimized files reach Storage.
-export const addPhoto = async (photoData: { alt: string; image: Blob; section: PhotoSection }): Promise<void> => {
+export const addPhoto = async (photoData: { caption: string; image: Blob; section: PhotoSection }): Promise<void> => {
   if (!db || !storage) throw new Error("Firebase is not configured.");
   const firebaseStorage = storage;
 
@@ -81,9 +81,10 @@ export const addPhoto = async (photoData: { alt: string; image: Blob; section: P
     variants: uploaded,
     width,
     height,
-    alt: photoData.alt,
+    // Only the caption is written now; alt text is derived from it (lib/photoUtils.photoAltText).
+    alt: '',
     order: newOrder,
-    concept: '',
+    concept: photoData.caption.trim(),
     hidden: false,
     section: photoData.section,
   });
@@ -110,11 +111,11 @@ export const deletePhoto = async (photo: Photo): Promise<void> => {
   }));
 };
 
-// Update photo details (alt text and caption)
-export const updatePhotoDetails = async (photoId: string, alt: string, concept: string): Promise<void> => {
+// Update the caption shown under a photo (it also becomes its alt text)
+export const updatePhotoCaption = async (photoId: string, concept: string): Promise<void> => {
   if (!db) throw new Error("Firebase is not configured.");
   const photoDocRef = doc(db, PHOTOS_COLLECTION, photoId);
-  await updateDoc(photoDocRef, { alt, concept });
+  await updateDoc(photoDocRef, { concept: concept.trim() });
 };
 
 // Hide a photo from visitors without deleting it

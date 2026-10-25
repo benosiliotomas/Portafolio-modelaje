@@ -25,7 +25,18 @@ export function buildSrcSet(photo: Photo): string | undefined {
 
 const PLACEHOLDER_LABELS = new Set(['', '.', '-', 'sin título']);
 
+/** Collapses line breaks and strips invisible marks (e.g. U+200E pasted from Instagram). */
+const singleLine = (text: string): string =>
+  text.replace(/[​-‏⁠﻿]/g, '').replace(/\s+/g, ' ').trim();
+
+/**
+ * Text for screen readers and image search. The admin only writes a caption, so the caption
+ * describes the photo; the older separate description field is the fallback for earlier uploads.
+ */
 export function photoAltText(photo: Photo, index: number): string {
+  const caption = singleLine(photo.concept ?? '');
+  if (caption) return `${MODEL_NAME} — ${caption}`;
+
   const label = photo.alt.trim().replace(/\.+$/, '').trim();
   if (PLACEHOLDER_LABELS.has(label.toLowerCase())) {
     return `${MODEL_NAME}, foto ${index + 1} del portfolio`;

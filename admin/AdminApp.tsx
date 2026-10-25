@@ -10,7 +10,7 @@ import {
   subscribeToPhotos,
   addPhoto,
   deletePhoto,
-  updatePhotoDetails,
+  updatePhotoCaption,
   updatePhotosOrder,
   setPhotoHidden,
   setPhotoSection,
@@ -44,8 +44,8 @@ const AdminPortfolio: React.FC = () => {
   };
 
   const actions: AdminActions = {
-    onUpdateDetails: (id, alt, concept) =>
-      run('No se pudieron guardar los detalles.')(() => updatePhotoDetails(id, alt, concept)),
+    onUpdateCaption: (id, caption) =>
+      run('No se pudo guardar el pie de foto.')(() => updatePhotoCaption(id, caption)),
     onDelete: (photo) => run('No se pudo eliminar la foto.')(() => deletePhoto(photo)),
     onToggleHidden: (photo) =>
       run('No se pudo cambiar la visibilidad de la foto.')(() => setPhotoHidden(photo.id, !photo.hidden)),

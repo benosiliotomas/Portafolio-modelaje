@@ -60,6 +60,26 @@ describe('buildSrcSet', () => {
 });
 
 describe('photoAltText', () => {
+  it('describes the photo with its caption, on one line', () => {
+    expect(photoAltText(photo({ alt: '', concept: 'Desfile 15 años de Suma Models. \nMarca: Lobo Gris.' }), 0)).toBe(
+      'Tomás Benosilio — Desfile 15 años de Suma Models. Marca: Lobo Gris.'
+    );
+  });
+
+  it('ignores invisible characters pasted into a caption', () => {
+    expect(photoAltText(photo({ alt: '', concept: '\u200e Sastrería. Marca: Inti Huatana.' }), 0)).toBe(
+      'Tomás Benosilio — Sastrería. Marca: Inti Huatana.'
+    );
+  });
+
+  it('prefers the caption over the old description field', () => {
+    expect(photoAltText(photo({ alt: 'Pasarela', concept: 'Marca: Tecnióptica.' }), 0)).toBe('Tomás Benosilio — Marca: Tecnióptica.');
+  });
+
+  it('numbers photos that have neither caption nor description', () => {
+    expect(photoAltText(photo({ alt: '', concept: '' }), 2)).toBe('Tomás Benosilio, foto 3 del portfolio');
+  });
+
   it('prefixes a meaningful label with the model name', () => {
     expect(photoAltText(photo({ alt: 'Pasarela / Eyewear editorial. ' }), 0)).toBe(
       'Tomás Benosilio — Pasarela / Eyewear editorial'

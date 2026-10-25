@@ -8,7 +8,7 @@ interface PhotoModalProps {
   index: number;
   total: number;
   onClose: () => void;
-  onUpdateDetails: (photoId: string, alt: string, concept: string) => void;
+  onUpdateCaption: (photoId: string, caption: string) => void;
   onNext: () => void;
   onPrevious: () => void;
   hasNext: boolean;
@@ -21,17 +21,15 @@ const navButtonClass = 'absolute top-1/2 -translate-y-1/2 z-10 p-3 text-stone ho
 const fieldClass = 'w-full px-0 py-2 bg-transparent border-0 border-b border-hairline focus:border-ink focus:outline-none text-ink';
 
 const PhotoModal: React.FC<PhotoModalProps> = ({
-  photo, index, total, onClose, onUpdateDetails, onNext, onPrevious, hasNext, hasPrevious, isReadOnly = false, startInEditMode = false
+  photo, index, total, onClose, onUpdateCaption, onNext, onPrevious, hasNext, hasPrevious, isReadOnly = false, startInEditMode = false
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editAlt, setEditAlt] = useState('');
   const [editConcept, setEditConcept] = useState('');
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (photo) {
       setIsEditing(startInEditMode);
-      setEditAlt(photo.alt);
       setEditConcept(photo.concept || '');
     }
   }, [photo, startInEditMode]);
@@ -66,7 +64,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
   const caption = photo.concept?.trim();
 
   const handleSaveDetails = () => {
-    onUpdateDetails(photo.id, editAlt, editConcept);
+    onUpdateCaption(photo.id, editConcept);
     setIsEditing(false);
   };
 
@@ -121,10 +119,6 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
             className="max-w-xl mx-auto space-y-4"
             onSubmit={(e) => { e.preventDefault(); handleSaveDetails(); }}
           >
-            <label className="block">
-              <span className="eyebrow text-ash">Descripción (texto alternativo)</span>
-              <input type="text" value={editAlt} onChange={(e) => setEditAlt(e.target.value)} className={fieldClass} />
-            </label>
             <label className="block">
               <span className="eyebrow text-ash">Pie de foto · desfile, marca, fotógrafo</span>
               <textarea value={editConcept} onChange={(e) => setEditConcept(e.target.value)} rows={2} className={`${fieldClass} resize-none`} />

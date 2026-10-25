@@ -7,11 +7,11 @@ const hasFiles = (e: DragEvent | React.DragEvent): boolean =>
   Array.from(e.dataTransfer?.types ?? []).includes('Files');
 
 interface ImageUploaderProps {
-  onPhotoAdded: (photoData: { alt: string; image: Blob; section: PhotoSection }) => Promise<void>;
+  onPhotoAdded: (photoData: { caption: string; image: Blob; section: PhotoSection }) => Promise<void>;
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({ onPhotoAdded }) => {
-  const [alt, setAlt] = useState('');
+  const [caption, setCaption] = useState('');
   const [section, setSection] = useState<PhotoSection>('book');
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -94,8 +94,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onPhotoAdded }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file || !alt.trim()) {
-      setError("Elegí una foto y escribí una descripción.");
+    if (!file) {
+      setError("Elegí una foto.");
       return;
     }
 
@@ -103,10 +103,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onPhotoAdded }) => {
     setError(null);
 
     try {
-      await onPhotoAdded({ alt, image: file, section });
+      await onPhotoAdded({ caption, image: file, section });
 
       // Reset form on success
-      setAlt('');
+      setCaption('');
       setFile(null);
       setPreview(null);
       setNotice(null);
@@ -178,13 +178,13 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onPhotoAdded }) => {
       </fieldset>
 
       <div>
-        <label htmlFor="alt" className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3 font-mono">Descripción (texto alternativo)</label>
+        <label htmlFor="caption" className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3 font-mono">Pie de foto · desfile, marca, fotógrafo (opcional)</label>
         <input
           type="text"
-          id="alt"
-          value={alt}
-          onChange={(e) => setAlt(e.target.value)}
-          placeholder="Ej: Digital de frente, cuerpo entero"
+          id="caption"
+          value={caption}
+          onChange={(e) => setCaption(e.target.value)}
+          placeholder="Ej: Sastrería. Marca: Inti Huatana."
           className="mt-1 block w-full px-4 py-3 bg-white border border-neutral-200 rounded-lg text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 transition-all font-mono shadow-sm"
           disabled={isLoading}
         />
@@ -195,7 +195,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onPhotoAdded }) => {
 
       <button
         type="submit"
-        disabled={isLoading || !file || !alt}
+        disabled={isLoading || !file}
         className="w-full flex justify-center items-center px-4 py-4 border border-transparent text-sm font-bold uppercase tracking-widest rounded-lg shadow-sm text-white bg-neutral-900 hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-neutral-900 disabled:bg-neutral-300 disabled:text-neutral-500 disabled:shadow-none disabled:cursor-not-allowed transition-all duration-300"
       >
         <UploadIcon className="h-5 w-5 mr-3" />
