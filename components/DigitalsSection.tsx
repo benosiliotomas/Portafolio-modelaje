@@ -19,7 +19,7 @@ const DigitalsSection: React.FC<DigitalsSectionProps> = ({ photos, onOpen, rende
   return (
     <section id="digitals" aria-labelledby="digitals-heading" className="max-w-7xl mx-auto px-4 sm:px-8 pt-[var(--space-section)] scroll-mt-14">
       <div className="-mx-4 sm:mx-0">
-        <SectionHeading id="digitals-heading" number="02" title="Digitals" count={photos.length} />
+        <SectionHeading id="digitals-heading" number="02" title="Digitals" />
       </div>
       <ul className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 list-none p-0 m-0">
         {photos.map((photo, index) => (
