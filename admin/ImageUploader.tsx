@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { UploadIcon } from '../components/icons';
+import { ACCEPTED_TYPES, pickImageFile } from '../lib/uploadValidation';
 import type { PhotoSection } from '../types';
 
-const MAX_FILE_BYTES = 25 * 1024 * 1024;
+const hasFiles = (e: DragEvent | React.DragEvent): boolean =>
+  Array.from(e.dataTransfer?.types ?? []).includes('Files');
 
 interface ImageUploaderProps {
   onPhotoAdded: (photoData: { alt: string; image: Blob; section: PhotoSection }) => Promise<void>;
@@ -15,23 +17,71 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onPhotoAdded }) => {
   const [preview, setPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  // dragenter/dragleave fire for every child element; count them so the highlight doesn't flicker.
+  const dragDepth = useRef(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // A photo dropped outside the drop zone would make the browser open the image and leave
+  // the admin page; while this form is on screen, ignore drops anywhere else.
+  useEffect(() => {
+    const block = (e: DragEvent) => {
+      if (hasFiles(e)) e.preventDefault();
+    };
+    window.addEventListener('dragover', block);
+    window.addEventListener('drop', block);
+    return () => {
+      window.removeEventListener('dragover', block);
+      window.removeEventListener('drop', block);
+    };
+  }, []);
+
+  useEffect(() => () => {
+    if (preview) URL.revokeObjectURL(preview);
+  }, [preview]);
+
+  const selectFiles = (files: File[]) => {
+    const result = pickImageFile(files);
+    setNotice(result.notice ?? null);
+    if (!result.file) {
+      setError(result.error ?? null);
+      return;
+    }
+    setError(null);
+    setFile(result.file);
+    setPreview(URL.createObjectURL(result.file));
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      // Photos are resized in the browser before upload, so the limit only guards memory.
-      if (selectedFile.size > MAX_FILE_BYTES) {
-        setError("El archivo es muy pesado. Máximo 25 MB.");
-        return;
-      }
-      setError(null);
-      setFile(selectedFile);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(selectedFile);
-    }
+    if (e.target.files?.length) selectFiles(Array.from(e.target.files));
+  };
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    if (!hasFiles(e) || isLoading) return;
+    e.preventDefault();
+    dragDepth.current += 1;
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    if (!hasFiles(e)) return;
+    dragDepth.current = Math.max(0, dragDepth.current - 1);
+    if (dragDepth.current === 0) setIsDragging(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    if (!hasFiles(e) || isLoading) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    dragDepth.current = 0;
+    setIsDragging(false);
+    if (isLoading) return;
+    selectFiles(Array.from(e.dataTransfer.files));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,8 +101,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onPhotoAdded }) => {
       setAlt('');
       setFile(null);
       setPreview(null);
-      const fileInput = document.getElementById('file-upload') as HTMLInputElement;
-      if (fileInput) fileInput.value = '';
+      setNotice(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     } catch (err: unknown) {
       setError(err instanceof Error && err.message ? err.message : "Ocurrió un error al subir la foto.");
     } finally {
@@ -64,21 +114,36 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onPhotoAdded }) => {
     <form onSubmit={handleSubmit} className="space-y-8 animate-fade-in">
       <div>
         <label htmlFor="file-upload" className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3 font-mono">Archivo Fotográfico</label>
-        <div className="mt-1 flex justify-center px-6 pt-8 pb-10 border-2 border-neutral-200 border-dashed rounded-xl bg-neutral-50 hover:bg-neutral-100 hover:border-neutral-300 transition-all duration-300 group">
-          <div className="space-y-4 text-center">
-            {preview ? (
-              <img src={preview} alt="Preview" className="mx-auto h-48 w-auto object-contain rounded-md shadow-lg border border-neutral-200" />
+        <div
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          data-dragging={isDragging || undefined}
+          className={`mt-1 flex justify-center px-6 pt-8 pb-10 border-2 border-dashed rounded-xl transition-colors duration-150 group ${isDragging
+            ? 'border-ink bg-paper'
+            : 'border-neutral-200 bg-neutral-50 hover:bg-neutral-100 hover:border-neutral-300'
+            }`}
+        >
+          <div className={`space-y-4 text-center ${isDragging ? 'pointer-events-none' : ''}`}>
+            {preview && !isDragging ? (
+              <img src={preview} alt="Vista previa de la foto elegida" className="mx-auto h-48 w-auto object-contain rounded-md shadow-lg border border-neutral-200" />
             ) : (
               <div className="w-20 h-20 mx-auto rounded-full bg-white shadow-sm flex items-center justify-center group-hover:bg-neutral-50 transition-colors border border-neutral-200">
-                <UploadIcon className="h-8 w-8 text-neutral-400 group-hover:text-clay transition-colors" />
+                <UploadIcon className={`h-8 w-8 transition-colors ${isDragging ? 'text-ink' : 'text-neutral-400 group-hover:text-clay'}`} />
               </div>
             )}
-            <div className="flex flex-col items-center text-sm text-neutral-500">
-              <label htmlFor="file-upload" className="relative cursor-pointer bg-white border border-neutral-200 px-4 py-2 mt-2 rounded-lg font-medium text-neutral-700 hover:text-neutral-900 hover:bg-neutral-50 transition-all shadow-sm">
-                <span>Seleccionar Archivo</span>
-                <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} accept="image/png, image/jpeg, image/webp" />
-              </label>
-                          </div>
+            {isDragging ? (
+              <p className="eyebrow text-ink m-0">Soltá la foto acá</p>
+            ) : (
+              <div className="flex flex-col items-center text-sm text-neutral-500">
+                <p className="eyebrow text-stone m-0">{file ? `${file.name} · arrastrá otra para cambiarla` : 'Arrastrá una foto acá'}</p>
+                <label htmlFor="file-upload" className="relative cursor-pointer bg-white border border-neutral-200 px-4 py-2 mt-4 rounded-lg font-medium text-neutral-700 hover:text-neutral-900 hover:bg-neutral-50 transition-all shadow-sm">
+                  <span>{file ? 'Elegir otra' : 'o elegir archivo'}</span>
+                  <input ref={fileInputRef} id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} accept={ACCEPTED_TYPES.join(', ')} />
+                </label>
+              </div>
+            )}
             <p className="text-xs text-neutral-400 font-medium">JPG, PNG o WebP · hasta 25 MB · se optimiza automáticamente</p>
           </div>
         </div>
@@ -117,7 +182,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onPhotoAdded }) => {
         />
       </div>
 
-      {error && <p className="text-sm text-red-600 font-medium p-3 bg-red-50 border border-red-100 rounded-lg">{error}</p>}
+      {notice && <p role="status" className="text-sm text-stone m-0">{notice}</p>}
+      {error && <p role="alert" className="text-sm text-red-600 font-medium p-3 bg-red-50 border border-red-100 rounded-lg">{error}</p>}
 
       <button
         type="submit"
