@@ -96,4 +96,4 @@ service cloud.firestore {
 
 ## Profile data
 
-Measurements, bio, contact details and the Instagram handle live in `data/profile.ts`.
+Measurements, contact details and the Instagram handle live in `data/profile.ts`.

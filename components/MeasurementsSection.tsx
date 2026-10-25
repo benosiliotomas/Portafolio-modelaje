@@ -1,6 +1,6 @@
 import React from 'react';
 import { SectionHeading } from './BookSection';
-import { getBio, getMeasurements } from '../data/profile';
+import { getMeasurements } from '../data/profile';
 import type { Measurement } from '../data/profile';
 
 const DataItem: React.FC<{ item: Measurement }> = ({ item }) => (
@@ -13,31 +13,20 @@ const DataItem: React.FC<{ item: Measurement }> = ({ item }) => (
   </div>
 );
 
-const AboutSection: React.FC = () => {
+const MeasurementsSection: React.FC = () => {
   const measurements = getMeasurements();
-  const bio = getBio();
 
   return (
     <section id="medidas" aria-labelledby="medidas-heading" className="max-w-7xl mx-auto px-4 sm:px-8 pt-[var(--space-section)] scroll-mt-14">
       <div className="-mx-4 sm:mx-0">
         <SectionHeading id="medidas-heading" number="03" title="Medidas" />
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-        <dl className="m-0 border-t border-hairline lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 sm:gap-x-12">
-          {measurements.map(item => <DataItem key={item.label} item={item} />)}
-        </dl>
-
-        <div className="lg:col-span-5 space-y-8">
-          {bio.map(({ lang, label, text }) => (
-            <div key={lang} lang={lang}>
-              <p className="eyebrow text-ash m-0 mb-3">{label}</p>
-              <p className="font-display text-xl leading-relaxed text-stone m-0">{text}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Kept to the width of a spec sheet: wider, labels and values drift too far apart. */}
+      <dl className="m-0 max-w-4xl border-t border-hairline grid grid-cols-1 sm:grid-cols-2 sm:gap-x-12">
+        {measurements.map(item => <DataItem key={item.label} item={item} />)}
+      </dl>
     </section>
   );
 };
 
-export default AboutSection;
+export default MeasurementsSection;

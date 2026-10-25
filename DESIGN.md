@@ -13,7 +13,7 @@ typography:
   display:
     fontFamily: Bodoni Moda
     fontWeight: 400
-    note: Name, section titles and the short bio (20px, optical sizing keeps it legible). Never bold, never UI text.
+    note: Name and section titles only. Never bold, never body copy or UI text.
   eyebrow:
     fontFamily: IBM Plex Mono
     fontSize: 11px
@@ -73,7 +73,7 @@ One page, shareable anchors: `#top` (cover) · `#book` · `#digitals` · `#medid
 - **Digitals** — the polaroid frame lives only here, because digitals are what the industry
   calls polaroids: `surface` border, 4% sides, caption in the bottom margin. 2 columns on
   phones, 4 on desktop.
-- **Medidas** — measurements (metric · imperial) beside the bio in Spanish and English.
+- **Medidas** — measurements (metric · imperial) in two columns, at spec-sheet width.
 - **Contacto** — email, WhatsApp, Instagram, comp card PDF.
 
 ## Comp card

@@ -51,27 +51,3 @@ export const headlineStats: string[] = [
   `Cintura ${WAIST_CM}`,
   'Calzado 43',
 ];
-
-export interface Bio {
-  lang: 'es' | 'en';
-  label: string;
-  text: string;
-}
-
-// Credits come from the photo captions; update them here when new work is added.
-export const getBio = (today: Date = new Date()): Bio[] => {
-  const age = ageOn(BIRTH_DATE, today);
-  const heightMetric = `${HEIGHT_M.toFixed(2).replace('.', ',')} m`;
-  return [
-    {
-      lang: 'es',
-      label: 'Español',
-      text: `Modelo, ${age} años, ${heightMetric}. Basado en Mar del Plata, con disponibilidad en Buenos Aires. Desfiló para Lobo Gris, Tecnióptica e Inti Huatana en el aniversario de 15 años de Suma Models, y en Desbordarte. Disponible para editorial, pasarela y campaña.`,
-    },
-    {
-      lang: 'en',
-      label: 'English',
-      text: `Model, ${age}, ${metersToFeetInches(HEIGHT_M)}. Based in Mar del Plata, available in Buenos Aires. Walked for Lobo Gris, Tecnióptica and Inti Huatana at Suma Models' 15th anniversary show, and at Desbordarte. Open to editorial, runway and campaign work.`,
-    },
-  ];
-};
