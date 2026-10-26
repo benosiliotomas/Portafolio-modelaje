@@ -78,6 +78,4 @@ One page, shareable anchors: `#top` (cover) · `#book` · `#digitals` · `#medid
 
 ## Comp card
 
-A5, two pages, white. Front: cover photo, name in Bodoni 30pt, role line in tracked mono.
-Back: 2×2 photos (two digitals, two book), eight measurements in two rows, name and contact
-over a hairline. Generated from live data by `npm run compcard`.
+Tomás's own composite, a single landscape A4 page, served as `public/comp-card.pdf`.

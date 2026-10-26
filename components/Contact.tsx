@@ -1,13 +1,14 @@
 import React from 'react';
 import { SectionHeading } from './BookSection';
-import { profile, whatsappUrl, COMP_CARD_URL } from '../data/profile';
+import { profile, whatsappUrl, COMP_CARD_URL, COMP_CARD_FILENAME } from '../data/profile';
 
 interface ContactLink {
   label: string;
   value: string;
   href: string;
   external?: boolean;
-  download?: boolean;
+  /** File name for the download, when the link is a file. */
+  download?: string;
 }
 
 const contactLinks = (): ContactLink[] => [
@@ -16,7 +17,7 @@ const contactLinks = (): ContactLink[] => [
   ...(profile.instagram
     ? [{ label: 'Instagram', value: `@${profile.instagram}`, href: `https://instagram.com/${profile.instagram}`, external: true }]
     : []),
-  { label: 'Comp card', value: 'Descargar PDF', href: COMP_CARD_URL, download: true },
+  { label: 'Comp card', value: 'Descargar PDF', href: COMP_CARD_URL, download: COMP_CARD_FILENAME },
 ];
 
 const Contact: React.FC = () => (
@@ -32,7 +33,7 @@ const Contact: React.FC = () => (
             <a
               href={link.href}
               {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-              {...(link.download ? { download: '' } : {})}
+              {...(link.download ? { download: link.download } : {})}
               className="group flex items-baseline justify-between gap-4 py-5"
             >
               <span className="eyebrow text-ash">{link.label}</span>

@@ -1,6 +1,6 @@
 import React from 'react';
 import PhotoImage from './PhotoImage';
-import { profile, headlineStats, COMP_CARD_URL } from '../data/profile';
+import { profile, headlineStats, COMP_CARD_URL, COMP_CARD_FILENAME } from '../data/profile';
 import type { Photo } from '../types';
 
 interface HeroProps {
@@ -44,7 +44,7 @@ const Hero: React.FC<HeroProps> = ({ cover, onOpen, controls }) => (
         <a href="#contacto" className="eyebrow text-ink border-b border-ink pb-1 hover:text-clay hover:border-clay transition-colors duration-150">
           Contactar →
         </a>
-        <a href={COMP_CARD_URL} download className="eyebrow text-stone border-b border-hairline pb-1 hover:text-clay hover:border-clay transition-colors duration-150">
+        <a href={COMP_CARD_URL} download={COMP_CARD_FILENAME} className="eyebrow text-stone border-b border-hairline pb-1 hover:text-clay hover:border-clay transition-colors duration-150">
           Comp card (PDF)
         </a>
       </div>
