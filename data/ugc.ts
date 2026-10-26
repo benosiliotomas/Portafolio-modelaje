@@ -7,7 +7,7 @@ export interface UgcStep {
 // you actually deliver before sharing the page.
 export const ugc = {
   headline: 'Contenido para marcas',
-  intro: 'Videos y fotos verticales para redes y anuncios, hechos por un modelo: pose, encuadre y el producto en primer plano.',
+  intro: 'Videos y fotos para redes y anuncios, hechos por un modelo: pose, encuadre y el producto en primer plano.',
   formats: [
     'Video vertical 9:16 para Reels, TikTok y anuncios',
     'Fotos del producto en uso',

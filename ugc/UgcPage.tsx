@@ -43,7 +43,7 @@ const UgcPage: React.FC = () => {
       <main className="flex-1">
         <section aria-labelledby="ugc-heading" className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-20">
           <div className="max-w-3xl">
-            <p className="eyebrow text-stone m-0">{profile.name} · Creador de contenido</p>
+            <p className="eyebrow text-stone m-0">{profile.name} · Modelo y Creador de contenido</p>
             <h1 id="ugc-heading" className="text-5xl sm:text-6xl lg:text-7xl leading-[1.02] text-ink mt-4 mb-6">{ugc.headline}</h1>
             <p className="font-display text-xl leading-relaxed text-stone m-0 max-w-lg">{ugc.intro}</p>
             <div className="flex flex-wrap gap-x-8 gap-y-3 mt-8">
@@ -57,8 +57,22 @@ const UgcPage: React.FC = () => {
           </div>
         </section>
 
+        <section aria-labelledby="muestras-heading" className="max-w-7xl mx-auto px-4 sm:px-8 pt-[var(--space-section)]">
+          <div className="-mx-4 sm:mx-0"><SectionHeading id="muestras-heading" number="01" title="Muestras" /></div>
+          {instagramPosts === null ? (
+            <p className="eyebrow text-ash m-0">Cargando…</p>
+          ) : instagramPosts.length > 0 ? (
+            <InstagramEmbeds posts={instagramPosts} />
+          ) : (
+            <p className="text-stone text-[15px] m-0">
+              Te mando ejemplos según tu rubro.{' '}
+              <a href="#contacto" className="text-ink border-b border-ink hover:text-clay hover:border-clay">Pedilos acá</a>.
+            </p>
+          )}
+        </section>
+
         <section aria-labelledby="formatos-heading" className="max-w-7xl mx-auto px-4 sm:px-8 pt-[var(--space-section)]">
-          <div className="-mx-4 sm:mx-0"><SectionHeading id="formatos-heading" number="01" title="Formatos" /></div>
+          <div className="-mx-4 sm:mx-0"><SectionHeading id="formatos-heading" number="02" title="Formatos" /></div>
           <ol className="list-none p-0 m-0 border-t border-hairline grid grid-cols-1 md:grid-cols-2 md:gap-x-12">
             {ugc.formats.map((format, i) => (
               <li key={format} className="flex items-baseline gap-6 py-5 border-b border-hairline">
@@ -70,7 +84,7 @@ const UgcPage: React.FC = () => {
         </section>
 
         <section aria-labelledby="proceso-heading" className="max-w-7xl mx-auto px-4 sm:px-8 pt-[var(--space-section)]">
-          <div className="-mx-4 sm:mx-0"><SectionHeading id="proceso-heading" number="02" title="Cómo trabajamos" /></div>
+          <div className="-mx-4 sm:mx-0"><SectionHeading id="proceso-heading" number="03" title="Cómo trabajo" /></div>
           <ol className="list-none p-0 m-0 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
             {ugc.steps.map((step, i) => (
               <li key={step.title} className="border-t border-ink pt-5">
@@ -80,20 +94,6 @@ const UgcPage: React.FC = () => {
               </li>
             ))}
           </ol>
-        </section>
-
-        <section aria-labelledby="muestras-heading" className="max-w-7xl mx-auto px-4 sm:px-8 pt-[var(--space-section)]">
-          <div className="-mx-4 sm:mx-0"><SectionHeading id="muestras-heading" number="03" title="Muestras" /></div>
-          {instagramPosts === null ? (
-            <p className="eyebrow text-ash m-0">Cargando…</p>
-          ) : instagramPosts.length > 0 ? (
-            <InstagramEmbeds posts={instagramPosts} />
-          ) : (
-            <p className="text-stone text-[15px] m-0">
-              Te mando ejemplos según tu rubro.{' '}
-              <a href="#contacto" className="text-ink border-b border-ink hover:text-clay hover:border-clay">Pedilos acá</a>.
-            </p>
-          )}
         </section>
 
         <section id="contacto" aria-labelledby="contacto-heading" className="max-w-7xl mx-auto px-4 sm:px-8 py-[var(--space-section)] scroll-mt-14">
