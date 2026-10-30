@@ -10,6 +10,7 @@ type FirestoreValue =
   | { doubleValue: number }
   | { booleanValue: boolean }
   | { nullValue: null }
+  | { timestampValue: string }
   | { arrayValue: { values?: FirestoreValue[] } }
   | { mapValue: { fields?: Record<string, FirestoreValue> } };
 
@@ -29,8 +30,12 @@ export function decodeValue(value: FirestoreValue): unknown {
   if ('doubleValue' in value) return value.doubleValue;
   if ('booleanValue' in value) return value.booleanValue;
   if ('nullValue' in value) return null;
+  if ('timestampValue' in value) return value.timestampValue;
   if ('arrayValue' in value) return (value.arrayValue.values ?? []).map(decodeValue);
-  return decodeFields(value.mapValue.fields ?? {});
+  if ('mapValue' in value) return decodeFields(value.mapValue.fields ?? {});
+  // Types this site never stores (geo points, references, bytes): ignore them rather than
+  // let one unexpected field break the whole page.
+  return null;
 }
 
 function decodeFields(fields: Record<string, FirestoreValue>): Record<string, unknown> {

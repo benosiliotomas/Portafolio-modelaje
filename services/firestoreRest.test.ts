@@ -67,3 +67,40 @@ describe('documentToSavedPosts', () => {
     })).toEqual({ status: 'saved', posts: ['a'] });
   });
 });
+
+describe('decoding Firestore types beyond the basics', () => {
+  it('reads timestamps as ISO strings', () => {
+    expect(decodeValue({ timestampValue: '2026-10-30T03:00:51.205Z' })).toBe('2026-10-30T03:00:51.205Z');
+  });
+
+  it('turns types it does not use into null instead of crashing', () => {
+    expect(decodeValue({ geoPointValue: { latitude: 1, longitude: 2 } } as never)).toBeNull();
+    expect(decodeValue({ referenceValue: 'projects/x/documents/a/b' } as never)).toBeNull();
+    expect(decodeValue({ bytesValue: 'AAAA' } as never)).toBeNull();
+  });
+
+  it('reads the saved Instagram list exactly as /admin stores it, with its updatedAt timestamp', () => {
+    expect(documentToSavedPosts({
+      name: 'projects/modelo-portafolio/databases/(default)/documents/content/instagram',
+      fields: {
+        updatedAt: { timestampValue: '2026-10-30T03:00:51.205Z' },
+        posts: {
+          arrayValue: {
+            values: [
+              { stringValue: 'https://www.instagram.com/reel/DZLIEHEySqi/' },
+              { stringValue: 'https://www.instagram.com/reel/DfF2jbYyABb/' },
+              { stringValue: 'https://www.instagram.com/reel/DeNkFoFydfE/' },
+            ],
+          },
+        },
+      },
+    })).toEqual({
+      status: 'saved',
+      posts: [
+        'https://www.instagram.com/reel/DZLIEHEySqi/',
+        'https://www.instagram.com/reel/DfF2jbYyABb/',
+        'https://www.instagram.com/reel/DeNkFoFydfE/',
+      ],
+    });
+  });
+});
