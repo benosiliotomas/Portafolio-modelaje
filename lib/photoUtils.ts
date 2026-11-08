@@ -1,6 +1,6 @@
 import type { Photo } from '../types';
 
-export const MODEL_NAME = 'Tomás Benosilio';
+export const MODEL_NAME = 'Tomas Benosilio';
 
 // Rendered widths: phone (1 column), tablet/desktop grid, full-screen viewer.
 export const VARIANT_WIDTHS = [480, 1080, 2000] as const;

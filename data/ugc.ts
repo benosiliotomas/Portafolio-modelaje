@@ -25,7 +25,7 @@ export const ugc = {
     'https://www.instagram.com/reel/DZLIEHEySqi/',
     'https://www.instagram.com/reel/DeNkFoFydfE/',
   ] as string[],
-  whatsappMessage: 'Hola Tomás, vi tu página de contenido para marcas y quería hacerte una consulta.',
+  whatsappMessage: 'Hola Tomas, vi tu página de contenido para marcas y quería hacerte una consulta.',
 };
 
 export function ugcMailto(email: string): string {

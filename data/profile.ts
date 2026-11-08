@@ -14,13 +14,15 @@ const WAIST_CM = 73;
 const HIPS_CM = 95;
 
 export const profile = {
-  name: 'Tomás Benosilio',
-  role: 'Modelo',
+  // Written without the accent on purpose: it is how people search it and how it reads on social profiles.
+  name: 'Tomas Benosilio',
+  role: 'Modelo & Creador UGC',
+  about: 'Trabajo desde Buenos Aires, Argentina, en moda, lifestyle, belleza y cuidado de la piel (skincare).',
   location: 'Buenos Aires, Argentina',
   email: 'benosiliotomas@gmail.com',
   phoneDisplay: '+54 9 223 635 2632',
   phoneE164: '+5492236352632',
-  whatsappMessage: 'Hola Tomás, vi tu portfolio y quería consultarte por un trabajo.',
+  whatsappMessage: 'Hola Tomas, vi tu portfolio y quería consultarte por un trabajo.',
   // Set the handle (without @) to show the Instagram link in Contacto.
   instagram: 'benosiliotomas' as string | null,
 };

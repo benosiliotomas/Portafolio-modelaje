@@ -5,6 +5,7 @@ import Hero from './Hero';
 import BookSection from './BookSection';
 import DigitalsSection from './DigitalsSection';
 import MeasurementsSection from './MeasurementsSection';
+import AboutSection from './AboutSection';
 import Contact from './Contact';
 import PhotoModal from './PhotoModal';
 import AdminControls, { AdminActions } from './AdminControls';
@@ -105,6 +106,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ photos, isLoading, error, admin, 
         )}
 
         <MeasurementsSection />
+        <AboutSection />
         <Contact />
       </main>
 
